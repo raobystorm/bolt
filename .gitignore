@@ -1,2 +1,8 @@
 .vscode-server
 .dotnet
+.cache
+.vscode
+
+.bash_history
+.python_history
+.gitconfig
