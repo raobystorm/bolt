@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  db:
+    build: ./db
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
