@@ -1,12 +1,8 @@
 {
   "name": "app",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "migrate": "knex migrate:latest --knexfile knexfile.js --esm",
-    "migrate:rollback": "knex migrate:rollback --knexfile knexfile.js --esm",
-    "migrate:status": "knex migrate:status --knexfile knexfile.js --esm",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -21,5 +17,6 @@
   "dependencies": {
     "express": "^4.18.2",
     "knex": "^2.4.2"
-  }
+  },
+  "description": ""
 }

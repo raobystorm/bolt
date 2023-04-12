@@ -3,7 +3,7 @@ WORKDIR /app
 
 RUN npm init -y && \
     npm install --save-dev typescript ts-node @types/node @types/express && \
-    npm install express knex
+    npm install express
 
 COPY tsconfig.json ./
 
