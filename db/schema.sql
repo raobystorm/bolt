@@ -1,6 +1,7 @@
 CREATE TABLE article (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   media_id BIGINT NOT NULL,
+  category_id BIGINT NOT NULL,
   title VARCHAR(512) NOT NULL,
   author VARCHAR(255),
   link_url VARCHAR(1024) NOT NULL,
@@ -8,7 +9,7 @@ CREATE TABLE article (
   publish_date TIMESTAMP,
   thumbnail_path VARCHAR(1024),
   FOREIGN KEY (media_id) REFERENCES media(id),
-  FOREIGN KEY (category) REFERENCES category(id),
+  FOREIGN KEY (category_id) REFERENCES category(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
