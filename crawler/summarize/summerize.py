@@ -4,7 +4,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains.mapreduce import MapReduceChain
 from langchain.prompts import PromptTemplate
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
 
 prompt = "This is a test"
 
