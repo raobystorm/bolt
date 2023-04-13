@@ -1,4 +1,3 @@
-newspaper3k
 openai
 feedparser
 black
@@ -7,3 +6,4 @@ mypy
 pydocstyle
 pycodestyle
 pytest
+langchain
