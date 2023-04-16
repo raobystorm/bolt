@@ -1,3 +1,4 @@
+openai
 feedparser
 black
 flake8
@@ -5,3 +6,7 @@ mypy
 pydocstyle
 pycodestyle
 pytest
+langchain
+tiktoken
+sqlalchemy[asyncio]
+aiobotocore
