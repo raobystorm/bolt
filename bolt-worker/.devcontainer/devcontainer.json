@@ -10,7 +10,8 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"yzhang.markdown-all-in-one",
-				"njpwerner.autodocstring"
+				"njpwerner.autodocstring",
+				"ms-python.flake8"
 			]
 		}
 	},

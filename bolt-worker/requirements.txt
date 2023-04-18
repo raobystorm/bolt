@@ -1,5 +1,4 @@
-openai
-feedparser
+aiohttp
 black
 flake8
 mypy
@@ -8,5 +7,4 @@ pycodestyle
 pytest
 langchain
 tiktoken
-sqlalchemy[asyncio]
 aiobotocore
