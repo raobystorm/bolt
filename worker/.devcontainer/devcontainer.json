@@ -3,7 +3,7 @@
 {
 	"dockerFile": "../Dockerfile",
 	"workspaceFolder": "/usr/app/bolt",
-	"workspaceMount": "source=${localWorkspaceFolder},target=/usr/app/bolt,type=bind",
+	"workspaceMount": "source=${localWorkspaceFolder}/..,target=/usr/app/bolt,type=bind",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -15,7 +15,7 @@
 			]
 		}
 	},
-	"onCreateCommand": "pip install -r requirements.txt",
+	"onCreateCommand": "pip install -r bolt-worker/requirements.txt",
 	"containerEnv": {
 		"PYTHON_PATH": "/usr/local/lib/python3.11"
 	}
