@@ -21,7 +21,6 @@ headers = {
 }
 
 media = "NewsWeek"
-media_lang = "en_US"
 
 # 获取当前时间，用于创建日期目录
 now = datetime.datetime.now()
@@ -68,7 +67,7 @@ if title not in title_list:
     # 把爬取的内容写成一个文件，文件名为新闻来源加时间戳，内容为新闻标题和新闻正文
     session = boto3.Session(profile_name="bolt")
     s3 = session.resource("s3")
-    object = s3.Object("bolt-prod", write_dir + f"/lang={media_lang}/article.txt")
+    object = s3.Object("bolt-prod", write_dir + "/article.txt")
     object.put(Body=content)
     # f = open(base_dir+"/"+"article.txt", "w",encoding='utf-8')
     # f.write(title+"\n"+content)
