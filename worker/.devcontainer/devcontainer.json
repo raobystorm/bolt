@@ -11,11 +11,22 @@
 				"ms-python.vscode-pylance",
 				"yzhang.markdown-all-in-one",
 				"njpwerner.autodocstring",
-				"ms-python.flake8"
-			]
+				"ms-python.flake8",
+				"charliermarsh.ruff"
+			],
+			"settings": {
+				"[python]": {
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.fixAll": true,
+						"source.organizeImports": true
+					}
+				},
+				"python.formatting.provider": "black"
+			}
 		}
 	},
-	"onCreateCommand": "pip install -r bolt-worker/requirements.txt",
+	"onCreateCommand": "pip install -r worker/requirements.txt",
 	"containerEnv": {
 		"PYTHON_PATH": "/usr/local/lib/python3.11"
 	}
