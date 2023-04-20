@@ -32,6 +32,7 @@ class WorkerJob:
 
 
 async def check_finish(job: WorkerJob) -> bool:
+    """检查文章的翻译是否完成（原文翻译，摘要生成，标题翻译）."""
     trans_summary_path = os.path.join(
         job.s3_prefix, f"lang={job.target_lang}", "summary.txt"
     )
@@ -49,6 +50,7 @@ async def check_finish(job: WorkerJob) -> bool:
 
 
 async def process_job(job: WorkerJob) -> None:
+    """根据SQS job的类型进行原文翻译/摘要生成/标题翻译的工作."""
     article_path = os.path.join(job.s3_prefix, "article.txt")
     target_lang = Language.get(job.target_lang).display_name()
     match job.job_type:
@@ -90,7 +92,11 @@ async def main() -> None:
                 await sqs.delete_message(
                     QueueUrl=QUEUE_URL, ReceiptHandle=message["ReceiptHandle"]
                 )
-                send_job = RankerJob(media_id=job.media_id, article_id=job.article_id)
+                send_job = RankerJob(
+                    media_id=job.media_id,
+                    article_id=job.article_id,
+                    lang=job.target_lang,
+                )
                 if await check_finish(job):
                     await sqs.send_message(
                         QueueUrl=QUEUE_URL, MessageBody=json.dumps(send_job)
