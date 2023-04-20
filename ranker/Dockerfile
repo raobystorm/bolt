@@ -2,4 +2,4 @@
 
 INCLUDE+ Dockerfile.dev
 
-RUN pip install -r worker/requirements.txt
+RUN pip install -r ranker/requirements.txt

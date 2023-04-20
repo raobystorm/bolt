@@ -83,7 +83,7 @@ async def main() -> None:
                 response = await sqs.receive_message(
                     QueueUrl=QUEUE_URL, WaitTimeSeconds=20
                 )
-                message: str = response["Messages"][0]
+                message: dict = response["Messages"][0]
                 json_dict = json.loads(message["Body"])
                 job = WorkerJob(**json_dict)
                 await process_job(job)
