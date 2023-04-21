@@ -2,6 +2,8 @@
 .dotnet
 .cache
 .vscode
+.bito
+__pycache__
 
 .bash_history
 .python_history
@@ -10,3 +12,5 @@
 .local
 node_modules
 data
+*.json
+*CommandMarker

@@ -9,3 +9,5 @@ tiktoken
 aiobotocore==2.5.0
 boto3==1.26.76
 sqlalchemy[asyncio]
+BeautifulSoup4
+langcodes[data]

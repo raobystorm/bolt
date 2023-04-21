@@ -28,5 +28,10 @@
 	"onCreateCommand": "pip install -r dev-requirements.txt",
 	"containerEnv": {
 		"PYTHON_PATH": "/usr/local/lib/python3.11"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/aws-cli:1": {
+			"version": "latest"
+		}
 	}
 }

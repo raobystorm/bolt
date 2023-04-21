@@ -23,7 +23,7 @@ async def summary_article(text: str, lang: str) -> str:
     body = {
         "model": "gpt-3.5-turbo",
         "temperature": 0,
-        "max_tokens": 1000,
+        "max_tokens": 600,
         "messages": [
             {
                 "role": "system",
@@ -31,11 +31,11 @@ async def summary_article(text: str, lang: str) -> str:
             },
             {
                 "role": "user",
-                "content": f"Summarize the news article in {lang}, the summary should be about 600 words. The article is below: {text}",
+                "content": f"Summarize the news article in {lang} in several sentences. The article is below: {text}",
             },
             {
                 "role": "assistant",
-                "content": f"Summary of the article in {lang}: ",
+                "content": f"Summary of the article in {lang} in several sentences: ",
             },
         ],
     }

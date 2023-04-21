@@ -4,10 +4,10 @@ import json
 import logging
 import os
 from typing import Any
-from aiobotocore import get_session
+from aiobotocore.session import get_session
 from sqlalchemy import Column, String
 from sqlalchemy import MetaData
-from sqlalchemy import select, insert
+from sqlalchemy import select
 from sqlalchemy import BigInteger
 from sqlalchemy import Table
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -80,4 +80,5 @@ async def main() -> None:
             await asyncio.sleep(0.5)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
