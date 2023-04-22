@@ -30,6 +30,10 @@
 		"PYTHON_PATH": "/usr/local/lib/python3.11",
 		"AWS_PROFILE": "bolt"
 	},
+	"runArgs": [
+		"--network=bolt_bolt",
+		"--ip=172.24.0.3"
+	],
 	"features": {
 		"ghcr.io/devcontainers/features/aws-cli:1": {
 			"version": "latest"
