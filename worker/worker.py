@@ -8,10 +8,17 @@ from aiobotocore.session import get_session
 from langcodes import Language
 from ranker.ranker import RankerJob
 
-from worker.io.s3 import get_file_from_s3, put_file_to_s3, check_file_in_s3
-from worker.llm.llm import summary_article, translate_article, translate_title
+from utils import (
+    summary_article,
+    translate_article,
+    translate_title,
+    get_file_from_s3,
+    put_file_to_s3,
+    check_file_in_s3,
+)
 
-QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod"
+QUEUE_WORKER_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod"
+QUEUE_RANKER_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-ranker-prod"
 
 
 @dataclass
@@ -76,7 +83,7 @@ async def main() -> None:
         while True:
             try:
                 response = await sqs.receive_message(
-                    QueueUrl=QUEUE_URL, WaitTimeSeconds=20
+                    QueueUrl=QUEUE_WORKER_URL, WaitTimeSeconds=20
                 )
                 if "Messages" in response:
                     for message in response["Messages"]:
@@ -86,16 +93,19 @@ async def main() -> None:
                         await process_job(job)
                         logging.info(f"delete message: {message}")
                         await sqs.delete_message(
-                            QueueUrl=QUEUE_URL, ReceiptHandle=message["ReceiptHandle"]
+                            QueueUrl=QUEUE_WORKER_URL,
+                            ReceiptHandle=message["ReceiptHandle"],
                         )
                         send_job = RankerJob(
                             media_id=job.media_id,
                             article_id=job.article_id,
                             lang=job.target_lang,
                         )
+                        logging.info(f"send ranker job: {send_job}")
                         if await check_finish(job):
                             await sqs.send_message(
-                                QueueUrl=QUEUE_URL, MessageBody=json.dumps(send_job)
+                                QueueUrl=QUEUE_RANKER_URL,
+                                MessageBody=json.dumps(send_job),
                             )
                 else:
                     logging.info("No messages in queue.")
