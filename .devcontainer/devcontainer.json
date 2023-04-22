@@ -27,7 +27,8 @@
 	},
 	"onCreateCommand": "pip install -r dev-requirements.txt",
 	"containerEnv": {
-		"PYTHON_PATH": "/usr/local/lib/python3.11"
+		"PYTHON_PATH": "/usr/local/lib/python3.11",
+		"AWS_PROFILE": "bolt"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/aws-cli:1": {
