@@ -28,7 +28,9 @@
 	"onCreateCommand": "pip install -r dev-requirements.txt",
 	"containerEnv": {
 		"PYTHON_PATH": "/usr/local/lib/python3.11",
-		"AWS_PROFILE": "bolt"
+		"AWS_PROFILE": "bolt",
+		"DB_HOST": "172.24.0.2",
+		"DB_PASSWORD": "bolt_pass"
 	},
 	"runArgs": [
 		"--network=bolt_bolt",

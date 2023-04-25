@@ -11,3 +11,4 @@ boto3==1.26.76
 sqlalchemy[asyncio]
 BeautifulSoup4
 langcodes[data]
+aiomysql
