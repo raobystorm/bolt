@@ -31,6 +31,11 @@ def write_s3(media, title, content):
     s3 = session.resource("s3")
     object = s3.Object("bolt-prod", write_dir + "/article.txt")
     object.put(Body=title + "\n" + content)
+    return write_dir
+
+
+# 函数功能：将爬取的信息写入消息队列
+def send_SQS(media_id, title, s3_prefix, job_type="summary", target_lang="zh-CN"):
     return
 
 
@@ -64,6 +69,8 @@ def crawl_newsweek(site_url, selector_path, title_list):
     # 获取text_path（指写入s3路径）
     text_path = ""
     response = httpRequest(link_url)
+    if response == "":
+        return
     html = response.text
     bs = BeautifulSoup(html, "html.parser")
 
@@ -108,7 +115,8 @@ def crawl_times(site_url, selector_path, title_list):
 # 函数功能：爬取nytimes网站
 def crawl_nytimes(site_url, selector_path, title_list):
     response = httpRequest(site_url)
-    # response = requests.get(craspurl)
+    if response == "":
+        return
     html = response.text
     bs = BeautifulSoup(html, "html.parser")
     ele = bs.select(selector_path)[0]
@@ -120,6 +128,8 @@ def crawl_nytimes(site_url, selector_path, title_list):
     text_path = ""
     # 获取title并查重
     response = httpRequest(link_url)
+    if response == "":
+        return
     html = response.text
     bs = BeautifulSoup(html, "html.parser")
     title = bs.select("[id*=link-]")[0].text
@@ -195,9 +205,10 @@ class myThread(threading.Thread):
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         f.write(now + " " + self.site_url + "\n")
         f.close()
-        # write_s3(self.Media, df["title"], df["content"])
+
+        # write_dir=write_s3(self.Media, df["title"], df["content"])
+        # send_SQS(self.Media, df["title"])
         threadmax.release()
-        # return df
 
 
 proxies = {
