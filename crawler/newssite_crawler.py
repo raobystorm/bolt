@@ -8,8 +8,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+# 全局配置，包含线程数，爬虫重试次数等
 threadmax = threading.BoundedSemaphore(3)
-
 requests.adapters.DEFAULT_RETRIES = 3
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -43,7 +43,7 @@ def httpRequest(url):
         adapter = HTTPAdapter(max_retries=retry)
         session.mount("http://", adapter)
         session.mount("https://", adapter)
-        response = session.get(site_url, headers=headers, verify=False, timeout=30)
+        response = session.get(url, headers=headers, verify=False, timeout=30)
         if response.status_code == 200:
             return response
     except:
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     # db写好之前直接使用crawler_info
     crawler_info = {
         "NewsWeek": {
-            # "https://www.newsweek.com": ".top-story",
+            "https://www.newsweek.com": ".img-pr",
             "https://www.newsweek.com/world": ".row",
             "https://www.newsweek.com/tech-science": ".row",
             "https://www.newsweek.com/autos": ".row",
@@ -240,20 +240,20 @@ if __name__ == "__main__":
     for media in crawler_info.keys():
         for site_url in crawler_info[media].keys():
             # 以下为单线程版本
-            df = pd.concat(
-                [
-                    df,
-                    get_news_info(
-                        media, site_url, crawler_info[media][site_url], title_list
-                    ),
-                ]
-            )
-            # 以下5行为多线程版本
-            # thread = myThread(
-            #     media, site_url, crawler_info[media][site_url], title_list
+            # df = pd.concat(
+            #     [
+            #         df,
+            #         get_news_info(
+            #             media, site_url, crawler_info[media][site_url], title_list
+            #         ),
+            #     ]
             # )
-            # thread.start()
-            # thread_list.append(thread)
+            # 以下5行为多线程版本
+            thread = myThread(
+                media, site_url, crawler_info[media][site_url], title_list
+            )
+            thread.start()
+            thread_list.append(thread)
 
     for t in thread_list:
         t.join()
