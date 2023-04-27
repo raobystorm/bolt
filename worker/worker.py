@@ -6,8 +6,7 @@ from dataclasses import dataclass
 
 from aiobotocore.session import get_session
 from langcodes import Language
-from db.db import DB_HOST, DB_PASSWORD, user_media, user_article
-from sqlalchemy.ext.asyncio import create_async_engine
+from db.db import get_db_engine, user_media, user_article
 from sqlalchemy import select
 
 
@@ -82,9 +81,7 @@ async def process_job(job: WorkerJob) -> None:
 
 async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
     """完成文章的摘要和翻译后将其推送给已订阅的用户."""
-    engine = create_async_engine(
-        f"mysql+aiomysql://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db", echo=True
-    )
+    engine = get_db_engine()
     async with engine.connect() as conn:
         result = await conn.execute(
             select(user_media.c.user_id).where(
