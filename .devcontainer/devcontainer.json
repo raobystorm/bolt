@@ -1,0 +1,44 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+	"dockerFile": "../Dockerfile.dev",
+	"workspaceFolder": "/usr/app/bolt",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/usr/app/bolt,type=bind",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"yzhang.markdown-all-in-one",
+				"njpwerner.autodocstring",
+				"charliermarsh.ruff"
+			],
+			"settings": {
+				"[python]": {
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.fixAll": true,
+						"source.organizeImports": true
+					}
+				},
+				"python.formatting.provider": "black"
+			}
+		}
+	},
+	"onCreateCommand": "pip install -r dev-requirements.txt",
+	"containerEnv": {
+		"PYTHON_PATH": "/usr/local/lib/python3.11",
+		"AWS_PROFILE": "bolt",
+		"DB_HOST": "172.24.0.2",
+		"DB_PASSWORD": "bolt_pass"
+	},
+	"runArgs": [
+		"--network=bolt_bolt",
+		"--ip=172.24.0.3"
+	],
+	"features": {
+		"ghcr.io/devcontainers/features/aws-cli:1": {
+			"version": "latest"
+		}
+	}
+}

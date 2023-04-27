@@ -1,9 +1,0 @@
-newspaper3k
-openai
-feedparser
-black
-flake8
-mypy
-pydocstyle
-pycodestyle
-pytest

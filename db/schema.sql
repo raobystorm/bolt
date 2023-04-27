@@ -48,7 +48,6 @@ CREATE TABLE user_article (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT NOT NULL,
   article_id BIGINT NOT NULL,
-  rank_number BIGINT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES user(id),
@@ -59,8 +58,12 @@ CREATE TABLE user_media (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT,
   media_id BIGINT,
+  lang VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES user(id),
   FOREIGN KEY (media_id) REFERENCES media(id)
 );
+
+CREATE INDEX user_media_index ON user_media (media_id, lang);
+CREATE INDEX user_article_index ON user_article (user_id);
