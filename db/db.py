@@ -1,10 +1,18 @@
 import os
 
-from sqlalchemy import DateTime, Column, ForeignKeyConstraint, Index, String
+from sqlalchemy import (
+    DateTime,
+    Column,
+    ForeignKeyConstraint,
+    Index,
+    String,
+    create_engine,
+)
 from sqlalchemy import MetaData
 from sqlalchemy import BigInteger
 from sqlalchemy import Table
 from sqlalchemy import func
+from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 
 
@@ -12,11 +20,11 @@ DB_HOST = os.environ["DB_HOST"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
 BOLT_DB = "bolt_db"
 
-meta = MetaData()
+meta_data = MetaData()
 
 user = Table(
     "user",
-    meta,
+    meta_data,
     Column("id", BigInteger, primary_key=True, autoincrement=True),
     Column("lang", String(255), nullable=False),
     Column("email", String(255), nullable=False),
@@ -26,7 +34,7 @@ user = Table(
 
 media = Table(
     "media",
-    meta,
+    meta_data,
     Column("id", BigInteger, primary_key=True, autoincrement=True),
     Column("name", String(255), nullable=False),
     Column("base_url", String(512), nullable=False),
@@ -39,10 +47,10 @@ media = Table(
 
 article = Table(
     "article",
-    meta,
+    meta_data,
     Column("id", BigInteger, primary_key=True, autoincrement=True),
     Column("media_id", BigInteger, nullable=False),
-    Column("category_id", BigInteger, nullable=False),
+    Column("category_id", BigInteger, nullable=True),
     Column("title", String(512), nullable=False),
     Column("author", String(255), nullable=True),
     Column("link_url", String(1024), nullable=False),
@@ -57,7 +65,7 @@ article = Table(
 
 category = Table(
     "category",
-    meta,
+    meta_data,
     Column("id", BigInteger, primary_key=True, autoincrement=True),
     Column("name", String(255), nullable=False),
     Column("created_at", DateTime, default=func.now()),
@@ -66,7 +74,7 @@ category = Table(
 
 user_media = Table(
     "user_media",
-    meta,
+    meta_data,
     Column("id", BigInteger, primary_key=True, autoincrement=True),
     Column("user_id", BigInteger, nullable=False),
     Column("media_id", BigInteger, nullable=False),
@@ -80,7 +88,7 @@ user_media = Table(
 
 user_article = Table(
     "user_article",
-    meta,
+    meta_data,
     Column("id", BigInteger, primary_key=True, autoincrement=True),
     Column("user_id", BigInteger, nullable=False),
     Column("article_id", BigInteger, nullable=False),
@@ -92,7 +100,13 @@ user_article = Table(
 )
 
 
-def get_db_engine() -> AsyncEngine:
+def get_db_engine_async() -> AsyncEngine:
     return create_async_engine(
         f"mysql+aiomysql://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db", echo=True
+    )
+
+
+def get_db_engine() -> Engine:
+    return create_engine(
+        f"mysql+pymysql://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db", echo=True
     )

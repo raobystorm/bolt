@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from aiobotocore.session import get_session
 from langcodes import Language
-from db.db import get_db_engine, user_media, user_article
+from db.db import get_db_engine_async, user_media, user_article
 from sqlalchemy import select
 
 
@@ -20,7 +20,6 @@ from utils import (
 )
 
 QUEUE_WORKER_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod"
-QUEUE_RANKER_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-ranker-prod"
 
 
 @dataclass
@@ -81,7 +80,7 @@ async def process_job(job: WorkerJob) -> None:
 
 async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
     """完成文章的摘要和翻译后将其推送给已订阅的用户."""
-    engine = get_db_engine()
+    engine = get_db_engine_async()
     async with engine.connect() as conn:
         result = await conn.execute(
             select(user_media.c.user_id).where(
@@ -90,9 +89,11 @@ async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
         )
         user_ids = list(result.fetchall())
         insert_data = [
-            {"user_id": user_id, "article_id": article_id} for user_id in user_ids
+            {"user_id": user_id[0], "article_id": article_id} for user_id in user_ids
         ]
         await conn.execute(user_article.insert(), insert_data)
+
+    await engine.dispose()
 
 
 async def main() -> None:
