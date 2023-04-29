@@ -81,7 +81,7 @@ async def process_job(job: WorkerJob) -> None:
 async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
     """完成文章的摘要和翻译后将其推送给已订阅的用户."""
     engine = get_db_engine_async()
-    async with engine.connect() as conn:
+    async with engine.begin() as conn:
         result = await conn.execute(
             select(user_media.c.user_id).where(
                 user_media.c.media_id == media_id and user_media.c.lang == lang
