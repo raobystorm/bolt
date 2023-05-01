@@ -12,3 +12,7 @@ sqlalchemy[asyncio]
 BeautifulSoup4
 langcodes[data]
 aiomysql
+fastapi
+pillow
+cryptography
+uvicorn

@@ -1,6 +1,7 @@
 from db.db import (
     get_db_engine,
     user_media,
+    user_article,
     user,
     article,
     media,
@@ -28,7 +29,7 @@ def inser_test_data() -> None:
                 media_id=1,
                 title="A Retirement Uprising Could Be on the Cards",
                 link_url="https://www.newsweek.com/retirement-pension-reform-france-social-security-1794441",
-                s3_key="Articles/media=NewsWeek/Year=2023/Month=04/Day=16/Hour=23/A_Retirement_Uprising_Could_Be_on_the_Cards/article.txt",
+                s3_prefix="Articles/media=NewsWeek/Year=2023/Month=04/Day=16/Hour=23/A_Retirement_Uprising_Could_Be_on_the_Cards",
             )
         )
         conn.execute(
@@ -38,3 +39,4 @@ def inser_test_data() -> None:
             )
         )
         conn.execute(user_media.insert().values(user_id=1, media_id=1, lang="zh-CN"))
+        conn.execute(user_article.insert().values(user_id=1, article_id=1))

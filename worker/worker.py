@@ -6,7 +6,8 @@ from dataclasses import dataclass
 
 from aiobotocore.session import get_session
 from langcodes import Language
-from db.db import get_db_engine_async, user_media, user_article
+from consts import QUEUE_WORKER_URL
+from db import get_db_engine_async, user_media, user_article
 from sqlalchemy import select
 
 
@@ -14,12 +15,10 @@ from utils import (
     summary_article,
     translate_article,
     translate_title,
-    get_file_from_s3,
-    put_file_to_s3,
+    get_text_file_from_s3,
+    put_text_file_to_s3,
     check_file_in_s3,
 )
-
-QUEUE_WORKER_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod"
 
 
 @dataclass
@@ -56,7 +55,7 @@ async def process_job(job: WorkerJob) -> None:
     target_lang = Language.get(job.target_lang).display_name()
     match job.job_type.lower():
         case "summary_article":
-            content = await get_file_from_s3(article_path)
+            content = await get_text_file_from_s3(article_path)
             text = await summary_article(content, target_lang)
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "summary.txt"
@@ -67,7 +66,7 @@ async def process_job(job: WorkerJob) -> None:
                 job.s3_prefix, f"lang={job.target_lang}", "title.txt"
             )
         case "translate_article":
-            content = await get_file_from_s3(article_path)
+            content = await get_text_file_from_s3(article_path)
             text = await translate_article(content, job.target_lang)
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "article.txt"
@@ -75,7 +74,7 @@ async def process_job(job: WorkerJob) -> None:
         case _:
             raise ValueError(f"Not supported job type: {job.job_type}")
 
-    await put_file_to_s3(res_path, text)
+    await put_text_file_to_s3(res_path, text)
 
 
 async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
@@ -110,7 +109,6 @@ async def main() -> None:
                         job = WorkerJob(**json_dict)
                         logging.info(f"process job: {job}")
                         await process_job(job)
-                        logging.info(f"delete message: {message}")
                         await sqs.delete_message(
                             QueueUrl=QUEUE_WORKER_URL,
                             ReceiptHandle=message["ReceiptHandle"],
