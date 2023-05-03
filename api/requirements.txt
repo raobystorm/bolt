@@ -3,3 +3,5 @@ boto3==1.26.76
 sqlalchemy[asyncio]
 aiomysql
 fastapi
+cryptography
+uvicorn

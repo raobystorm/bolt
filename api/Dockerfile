@@ -1,14 +1,5 @@
-FROM node:19-buster
-WORKDIR /app
+# syntax = edrevo/dockerfile-plus
 
-RUN npm init -y && \
-    npm install --save-dev typescript ts-node @types/node @types/express && \
-    npm install express
+INCLUDE+ Dockerfile.dev
 
-COPY tsconfig.json ./
-
-# Copy the rest of the app files to the working directory
-COPY src ./src
-
-# Expose port 3000
-EXPOSE 3000
+RUN pip install -r api/requirements.txt

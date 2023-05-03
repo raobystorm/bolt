@@ -23,5 +23,5 @@ __all__ = [
     "get_db_engine",
     "init_db_tables",
     "inser_test_data",
-    "",
+    "DB_URL",
 ]

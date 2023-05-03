@@ -1,10 +1,9 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 
 
 from sqlalchemy import select
-from db import get_db_engine_async, article, user_article, media
+from db import article, user_article, media, get_db_engine_async
 from worker.utils.s3 import get_text_file_from_s3
 from datetime import datetime
 import logging
@@ -15,9 +14,19 @@ THUMBNAIL_PREFIX = "https://bolt-prod-public.s3.us-west-2.amazonaws.com/"
 app = FastAPI()
 logger = logging.getLogger("uvicorn.error")
 
+origins = ["http://127.0.0.1:5173"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/timeline/{user_id}")
-async def fetch_articles(user_id: int, page: int, lang: str) -> JSONResponse:
+async def fetch_articles(user_id: int, page: int, lang: str) -> dict:
     engine = get_db_engine_async()
     async with engine.connect() as conn:
         offset = PAGE_LIMIT * page
@@ -45,12 +54,11 @@ async def fetch_articles(user_id: int, page: int, lang: str) -> JSONResponse:
                 "media": media_name,
             }
         )
-
-    return JSONResponse(content=jsonable_encoder(results))
+    return results
 
 
 @app.get("/article/{article_id}")
-async def get_article(article_id: int, lang: str) -> JSONResponse:
+async def get_article(article_id: int, lang: str) -> dict:
     engine = get_db_engine_async()
     async with engine.connect() as conn:
         stmt = (
@@ -72,16 +80,12 @@ async def get_article(article_id: int, lang: str) -> JSONResponse:
     summary = await get_text_file_from_s3(s3_prefix + f"/lang={lang}/summary.txt")
     trans_text = await get_text_file_from_s3(s3_prefix + f"/lang={lang}/article.txt")
 
-    return JSONResponse(
-        content=jsonable_encoder(
-            {
-                "title": title,
-                "article": org_text,
-                "publish_date": datetime.strftime(publish_date, "%Y-%m-%d"),
-                "media": media_name,
-                "translate_title": trans_title,
-                "summary": summary,
-                "translate_article": trans_text,
-            }
-        )
-    )
+    return {
+        "title": title,
+        "article": org_text,
+        "publish_date": datetime.strftime(publish_date, "%Y-%m-%d"),
+        "media": media_name,
+        "translate_title": trans_title,
+        "summary": summary,
+        "translate_article": trans_text,
+    }
