@@ -16,3 +16,7 @@ fastapi
 pillow
 cryptography
 uvicorn
+
+pandas
+requests
+bs4

@@ -4,7 +4,7 @@ import datetime
 import threading
 import time
 
-import boto3
+#import boto3
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -207,7 +207,7 @@ class myThread(threading.Thread):
     def _run(self):
         threadmax.acquire()
         df=get_news_info(self.Media, self.site_url, self.selector_path, self.title_list)
-        write_s3(self.Media, df["title"], df["content"])
+        #write_s3(self.Media, df["title"], df["content"])
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         f = open("成功url.txt", "a")
         f.write(now + " " + self.site_url + "\n")
