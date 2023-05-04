@@ -1,3 +1,7 @@
 feedparser
 BeautifulSoup4
 pillow
+
+pandas
+requests
+bs4
