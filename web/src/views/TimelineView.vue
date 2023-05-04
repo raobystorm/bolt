@@ -1,12 +1,15 @@
 <template>
   <div class="Timeline">
     <h1>This is a Timeline page</h1>
-    <div v-for="item in items" :key="item.title" class="card mb-3">
-      <img v-bind:src="item.thumbnail_path" width="240" height="160" class="TimelineItemImage">
-      <div>{{ item.title }}</div>
-      <div>{{ item.media }}</div>
-    </div>
-
+    <ul>
+      <div v-for="item in items" :key="item.title" class="card mb-3">
+        <li>
+          <img v-bind:src="item.thumbnail_path" width="80" height="80" class="TimelineItemImage">
+          <div>{{ item.title }}</div>
+          <div>{{ item.media }}</div>
+        </li>
+      </div>
+    </ul>
     <VueEternalLoading :load="load" />
   </div>
 </template>

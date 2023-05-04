@@ -14,7 +14,7 @@ THUMBNAIL_PREFIX = "https://bolt-prod-public.s3.us-west-2.amazonaws.com/"
 app = FastAPI()
 logger = logging.getLogger("uvicorn.error")
 
-origins = ["http://127.0.0.1:5173"]
+origins = ["http://127.0.0.1:8080"]
 
 app.add_middleware(
     CORSMiddleware,

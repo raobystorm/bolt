@@ -18,7 +18,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 
 DB_HOST = os.environ["DB_HOST"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
-DB_URL = f"mysql+aiomysql://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db"
+DB_URL_ASYNC = f"mysql+aiomysql://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db"
+DB_URL = f"mysql+mysqlconnector://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db"
 BOLT_DB = "bolt_db"
 
 meta_data = MetaData()
@@ -101,7 +102,7 @@ user_article = Table(
 
 
 def get_db_engine_async() -> AsyncEngine:
-    return create_async_engine(DB_URL, echo=True)
+    return create_async_engine(DB_URL_ASYNC, echo=True)
 
 
 def get_db_engine() -> Engine:
