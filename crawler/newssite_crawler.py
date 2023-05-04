@@ -1,5 +1,4 @@
 # import newspaper
-import datetime
 # import newspaper
 import datetime
 import threading
@@ -13,11 +12,12 @@ from bs4 import BeautifulSoup
 # 全局配置，包含线程数，爬虫重试次数等
 threadmax = threading.BoundedSemaphore(3)
 requests.adapters.DEFAULT_RETRIES = 3
+#告警关闭
+import warnings
+
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-#告警关闭
-import warnings
 warnings.filterwarnings("ignore")
 
 
@@ -219,13 +219,10 @@ class myThread(threading.Thread):
 
 proxies = {
     "http": "127.0.0.1:7890",
-    "https": "127.0.0.1:7890",
-    "http": "127.0.0.1:7890",
-    "https": "127.0.0.1:7890",
+    "https": "127.0.0.1:7890"
 }
 
 headers = {
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
 }
 

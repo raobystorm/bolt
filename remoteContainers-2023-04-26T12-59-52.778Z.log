@@ -1,0 +1,1269 @@
+[2023-04-26T12:59:52.806Z] Dev Containers 0.288.1 in VS Code 1.77.3 (704ed70d4fd1c6bd6342c436f1ede30d1cff4710).
+[2023-04-26T12:59:52.806Z] Start: Resolving Remote
+[2023-04-26T12:59:52.837Z] Setting up container for folder or workspace: c:\Users\hyang\bolt
+[2023-04-26T12:59:52.839Z] Start: Run: wsl -l -v
+[2023-04-26T12:59:52.939Z] Stop (100 ms): Run: wsl -l -v
+[2023-04-26T12:59:52.940Z] Start: Run: wsl -d docker-desktop-data -e /bin/sh -c echo ~
+[2023-04-26T12:59:53.062Z] Stop (122 ms): Run: wsl -d docker-desktop-data -e /bin/sh -c echo ~
+[2023-04-26T12:59:53.062Z] Could not connect to WSL.
+[2023-04-26T12:59:53.062Z] Command failed: wsl -d docker-desktop-data -e /bin/sh -c echo ~
+[2023-04-26T12:59:53.062Z] 
+[2023-04-26T12:59:53.062Z] <3>WSL (23) ERROR: CreateProcessEntryCommon:370: getpwuid(0) failed 2
+<3>WSL (23) ERROR: CreateProcessEntryCommon:374: getpwuid(0) failed 2
+<3>WSL (23) ERROR: CreateProcessEntryCommon:577: execvpe /bin/sh failed 2
+<3>WSL (23) ERROR: CreateProcessEntryCommon:586: Create process not expected to return
+[2023-04-26T12:59:53.065Z] Start: Check Docker is running
+[2023-04-26T12:59:53.065Z] Start: Run: docker version --format {{.Server.APIVersion}}
+[2023-04-26T12:59:53.196Z] Stop (131 ms): Run: docker version --format {{.Server.APIVersion}}
+[2023-04-26T12:59:53.196Z] Server API version: 1.41
+[2023-04-26T12:59:53.196Z] Stop (131 ms): Check Docker is running
+[2023-04-26T12:59:53.197Z] Start: Run: docker volume ls -q
+[2023-04-26T12:59:53.317Z] Stop (120 ms): Run: docker volume ls -q
+[2023-04-26T12:59:53.318Z] Start: Run: docker inspect --type container 62c604f1c18a97f9b3ab9a4ba31cd521f9e859af7c470097ddf2bff0bcf21181
+[2023-04-26T12:59:53.439Z] Stop (121 ms): Run: docker inspect --type container 62c604f1c18a97f9b3ab9a4ba31cd521f9e859af7c470097ddf2bff0bcf21181
+[2023-04-26T12:59:53.440Z] Start: Run: docker ps -q -a --filter label=vsch.local.folder=c:\Users\hyang\bolt --filter label=vsch.quality=stable
+[2023-04-26T12:59:53.561Z] Stop (121 ms): Run: docker ps -q -a --filter label=vsch.local.folder=c:\Users\hyang\bolt --filter label=vsch.quality=stable
+[2023-04-26T12:59:53.561Z] Start: Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt --filter label=devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json
+[2023-04-26T12:59:53.684Z] Stop (123 ms): Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt --filter label=devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json
+[2023-04-26T12:59:53.685Z] Start: Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt
+[2023-04-26T12:59:53.807Z] Stop (122 ms): Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt
+[2023-04-26T12:59:53.807Z] Start: Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt
+[2023-04-26T12:59:53.928Z] Stop (121 ms): Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt
+[2023-04-26T12:59:53.929Z] Start: Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js up --user-data-folder c:\Users\hyang\AppData\Roaming\Code\User\globalStorage\ms-vscode-remote.remote-containers\data --container-session-data-folder /tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105 --workspace-folder c:\Users\hyang\bolt --workspace-mount-consistency cached --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --default-user-env-probe loginInteractiveShell --mount type=volume,source=vscode,target=/vscode,external=true --skip-post-create --update-remote-user-uid-default on --mount-workspace-git-root true
+[2023-04-26T12:59:54.299Z] @devcontainers/cli 0.35.0. Node.js v16.14.2. win32 10.0.22621 x64.
+[2023-04-26T12:59:54.299Z] Start: Run: docker buildx version
+[2023-04-26T12:59:54.564Z] Stop (265 ms): Run: docker buildx version
+[2023-04-26T12:59:54.564Z] github.com/docker/buildx v0.10.4 c513d34049e499c53468deac6c4267ee72948f02
+[2023-04-26T12:59:54.564Z] 
+[2023-04-26T12:59:54.564Z] Start: Resolving Remote
+[2023-04-26T12:59:54.567Z] Start: Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt --filter label=devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json
+[2023-04-26T12:59:54.683Z] Stop (116 ms): Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt --filter label=devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json
+[2023-04-26T12:59:54.686Z] Start: Run: docker inspect --type image python:3.11-slim
+[2023-04-26T12:59:54.808Z] Stop (122 ms): Run: docker inspect --type image python:3.11-slim
+[2023-04-26T12:59:58.834Z] local container features stored at: c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\node_modules\vscode-dev-containers\container-features
+[2023-04-26T12:59:58.835Z] Start: Run: tar --no-same-owner -x -f -
+[2023-04-26T12:59:58.869Z] Stop (34 ms): Run: tar --no-same-owner -x -f -
+[2023-04-26T12:59:58.882Z] * Processing feature: ghcr.io/devcontainers/features/aws-cli:1
+[2023-04-26T13:00:00.696Z] * Fetching feature: aws-cli_1_oci
+[2023-04-26T13:00:02.107Z] Start: Run: docker buildx build --load --build-arg BUILDKIT_INLINE_CACHE=1 -f C:\Users\hyang\AppData\Local\Temp\devcontainercli\container-features\0.35.0-1682513998832\Dockerfile-with-features -t vsc-bolt-b91bca347d922e6059c1e5f72d2f3c6ef16b69ea1161d91a0f377337b074c12a --target dev_containers_target_stage --build-context dev_containers_feature_content_source=C:\Users\hyang\AppData\Local\Temp\devcontainercli\container-features\0.35.0-1682513998832 --build-arg _DEV_CONTAINERS_BASE_IMAGE=dev_container_auto_added_stage_label --build-arg _DEV_CONTAINERS_IMAGE_USER=root --build-arg _DEV_CONTAINERS_FEATURE_CONTENT_SOURCE=dev_container_feature_content_temp c:\Users\hyang\bolt
+[2023-04-26T13:00:02.230Z] 
+[2023-04-26T13:00:02.558Z] 
+[+] Building 0.0s (0/0)
+[2023-04-26T13:00:02.865Z] [+] Building 0.1s (2/2)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+[2023-04-26T13:00:03.021Z] [+] Building 0.3s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               0.2s
+[2023-04-26T13:00:03.175Z] [+] Building 0.4s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               0.3s
+[2023-04-26T13:00:03.328Z] [+] Building 0.6s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               0.5s
+[2023-04-26T13:00:03.482Z] [+] Building 0.7s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               0.6s
+[2023-04-26T13:00:03.635Z] [+] Building 0.9s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               0.8s
+[2023-04-26T13:00:03.774Z] [+] Building 1.0s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               0.8s
+[2023-04-26T13:00:03.806Z]  => resolve image config for docker.io/docker/dockerfile:1.4               0.9s
+[2023-04-26T13:00:03.944Z] [+] Building 1.2s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               1.1s
+[2023-04-26T13:00:04.096Z] [+] Building 1.4s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               1.2s
+[2023-04-26T13:00:04.249Z] [+] Building 1.5s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               1.4s
+[2023-04-26T13:00:04.405Z] [+] Building 1.7s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               1.5s
+[2023-04-26T13:00:04.559Z] [+] Building 1.8s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               1.7s
+[2023-04-26T13:00:04.699Z] [+] Building 2.0s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               1.8s
+
+[2023-04-26T13:00:04.728Z] 
+
+
+
+
+
+[2023-04-26T13:00:04.866Z] [+] Building 2.1s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               2.0s
+[2023-04-26T13:00:05.024Z] [+] Building 2.3s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               2.2s
+[2023-04-26T13:00:05.182Z] [+] Building 2.4s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               2.3s
+[2023-04-26T13:00:05.322Z] [+] Building 2.6s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               2.5s
+[2023-04-26T13:00:05.364Z] 
+[2023-04-26T13:00:05.489Z] [+] Building 2.7s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               2.6s
+[2023-04-26T13:00:05.644Z] [+] Building 2.9s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               2.8s
+[2023-04-26T13:00:05.799Z] [+] Building 3.1s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               2.9s
+[2023-04-26T13:00:05.954Z] [+] Building 3.2s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               3.1s
+[2023-04-26T13:00:06.107Z] [+] Building 3.4s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               3.2s
+[2023-04-26T13:00:06.274Z] [+] Building 3.5s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               3.4s
+[2023-04-26T13:00:06.402Z] [+] Building 3.7s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               3.5s
+[2023-04-26T13:00:06.443Z] 
+[2023-04-26T13:00:06.569Z] [+] Building 3.8s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               3.7s
+[2023-04-26T13:00:06.726Z] [+] Building 4.0s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               3.9s
+[2023-04-26T13:00:06.881Z] [+] Building 4.1s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               4.0s
+[2023-04-26T13:00:07.036Z] [+] Building 4.3s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               4.2s
+[2023-04-26T13:00:07.190Z] [+] Building 4.4s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               4.3s
+[2023-04-26T13:00:07.344Z] [+] Building 4.6s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               4.5s
+[2023-04-26T13:00:07.497Z] [+] Building 4.8s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               4.6s
+[2023-04-26T13:00:07.651Z] [+] Building 4.9s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               4.8s
+[2023-04-26T13:00:07.806Z] [+] Building 5.1s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               4.9s
+[2023-04-26T13:00:07.959Z] [+] Building 5.2s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               5.1s
+[2023-04-26T13:00:08.112Z] [+] Building 5.4s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               5.2s
+[2023-04-26T13:00:08.268Z] [+] Building 5.5s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               5.4s
+[2023-04-26T13:00:08.422Z] [+] Building 5.7s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               5.6s
+[2023-04-26T13:00:08.578Z] [+] Building 5.8s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               5.7s
+[2023-04-26T13:00:08.731Z] [+] Building 6.0s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               5.9s
+[2023-04-26T13:00:08.889Z] [+] Building 6.1s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.0s
+[2023-04-26T13:00:09.043Z] [+] Building 6.3s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.2s
+[2023-04-26T13:00:09.180Z] [+] Building 6.5s (2/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.2s
+
+[2023-04-26T13:00:09.210Z] 
+
+
+
+
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.3s
+[2023-04-26T13:00:09.306Z] [+] Building 6.6s (3/3)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+[2023-04-26T13:00:09.348Z] 
+[2023-04-26T13:00:09.473Z] [+] Building 6.7s (4/4)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+[2023-04-26T13:00:09.627Z] [+] Building 6.9s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        0.1s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:09.778Z] [+] Building 7.0s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        0.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:09.932Z] [+] Building 7.2s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        0.4s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:10.069Z] [+] Building 7.3s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        0.4s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:10.103Z]  => [internal] load metadata for docker.io/library/python:3.11-slim        0.6s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:10.238Z] [+] Building 7.5s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        0.7s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:10.390Z] [+] Building 7.6s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        0.9s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:10.545Z] [+] Building 7.8s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        1.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:10.699Z] [+] Building 8.0s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        1.2s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:10.855Z] [+] Building 8.1s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        1.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.010Z] [+] Building 8.3s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        1.5s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.149Z] [+] Building 8.4s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        1.5s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.193Z]  => [internal] load metadata for docker.io/library/python:3.11-slim        1.6s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.316Z] [+] Building 8.6s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        1.8s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.469Z] [+] Building 8.7s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        2.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.623Z] [+] Building 8.9s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        2.1s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.779Z] [+] Building 9.0s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        2.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:11.933Z] [+] Building 9.2s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        2.4s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:12.078Z] [+] Building 9.3s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        2.6s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:12.258Z] [+] Building 9.5s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        2.7s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:12.384Z] [+] Building 9.7s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        2.7s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:12.429Z]  => [internal] load metadata for docker.io/library/python:3.11-slim        2.9s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:12.552Z] [+] Building 9.8s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:12.705Z] [+] Building 10.0s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.2s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:12.861Z] [+] Building 10.1s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.013Z] [+] Building 10.3s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.5s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.167Z] [+] Building 10.4s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.7s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.303Z] [+] Building 10.6s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.7s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+
+[2023-04-26T13:00:13.335Z] 
+
+
+
+
+
+
+
+
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.8s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.459Z] [+] Building 10.7s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        3.8s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.489Z]  => [internal] load metadata for docker.io/library/python:3.11-slim        4.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.614Z] [+] Building 10.9s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+
+[2023-04-26T13:00:13.642Z] 
+
+
+
+
+
+
+
+
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.1s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.766Z] [+] Building 11.0s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.1s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.797Z]  => [internal] load metadata for docker.io/library/python:3.11-slim        4.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.922Z] [+] Building 11.2s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:13.950Z]  => [internal] load metadata for docker.io/library/python:3.11-slim        4.4s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:14.076Z] [+] Building 11.3s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.6s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:14.104Z] 
+[2023-04-26T13:00:14.230Z] [+] Building 11.5s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.7s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:14.260Z] 
+[2023-04-26T13:00:14.414Z] [+] Building 11.7s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.9s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:14.539Z] [+] Building 11.8s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        4.9s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+
+[2023-04-26T13:00:14.567Z] 
+
+
+
+
+
+
+
+
+ => [internal] load metadata for docker.io/library/python:3.11-slim        5.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:14.691Z] [+] Building 12.0s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        5.2s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:14.720Z] 
+[2023-04-26T13:00:14.843Z] [+] Building 12.1s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        5.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:14.873Z] 
+[2023-04-26T13:00:14.996Z] [+] Building 12.3s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        5.3s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+
+[2023-04-26T13:00:15.025Z] 
+
+
+
+
+
+
+
+
+ => [internal] load metadata for docker.io/library/python:3.11-slim        5.5s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:15.164Z] [+] Building 12.4s (7/8)
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        5.6s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[2023-04-26T13:00:15.285Z] [+] Building 12.6s (21/21) FINISHED
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 2.71kB                                     0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => resolve image config for docker.io/docker/dockerfile:1.4               6.5s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim        5.7s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+ => [context dev_containers_feature_content_source] load from client       0.0s
+ => => transferring dev_containers_feature_content_source: 16.24kB         0.0s
+ => [dev_container_auto_added_stage_label 1/4] FROM docker.io/library/pyt  0.0s
+ => CACHED [dev_container_auto_added_stage_label 2/4] RUN python -m pip i  0.0s
+ => CACHED [dev_container_auto_added_stage_label 3/4] WORKDIR /usr/app/bo  0.0s
+ => CACHED [dev_container_auto_added_stage_label 4/4] RUN apt-get update   0.0s
+ => CACHED [dev_containers_target_stage 1/4] RUN mkdir -p /tmp/dev-contai  0.0s
+ => CACHED [dev_containers_feature_content_normalize 1/2] COPY --from=dev  0.0s
+ => CACHED [dev_containers_feature_content_normalize 2/2] RUN chmod -R 07  0.0s
+ => CACHED [dev_containers_target_stage 2/4] COPY --from=dev_containers_f  0.0s
+ => CACHED [dev_containers_target_stage 3/4] RUN echo "_CONTAINER_USER_HO  0.0s
+ => CACHED [dev_containers_target_stage 4/4] RUN --mount=type=bind,from=d  0.0s
+ => exporting to image                                                     0.0s
+ => => exporting layers                                                    0.0s
+ => => writing image sha256:8d0ce86cb1a99aba8a6b3a678068af00c656f6ab10033  0.0s
+ => => naming to docker.io/library/vsc-bolt-b91bca347d922e6059c1e5f72d2f3  0.0s
+ => exporting cache                                                        0.0s
+ => => preparing build cache for export                                    0.0s
+[2023-04-26T13:00:15.405Z] Stop (13298 ms): Run: docker buildx build --load --build-arg BUILDKIT_INLINE_CACHE=1 -f C:\Users\hyang\AppData\Local\Temp\devcontainercli\container-features\0.35.0-1682513998832\Dockerfile-with-features -t vsc-bolt-b91bca347d922e6059c1e5f72d2f3c6ef16b69ea1161d91a0f377337b074c12a --target dev_containers_target_stage --build-context dev_containers_feature_content_source=C:\Users\hyang\AppData\Local\Temp\devcontainercli\container-features\0.35.0-1682513998832 --build-arg _DEV_CONTAINERS_BASE_IMAGE=dev_container_auto_added_stage_label --build-arg _DEV_CONTAINERS_IMAGE_USER=root --build-arg _DEV_CONTAINERS_FEATURE_CONTENT_SOURCE=dev_container_feature_content_temp c:\Users\hyang\bolt
+[2023-04-26T13:00:15.407Z] Start: Run: docker events --format {{json .}} --filter event=start
+[2023-04-26T13:00:15.430Z] Start: Starting container
+[2023-04-26T13:00:15.430Z] Start: Run: docker run --sig-proxy=false -a STDOUT -a STDERR --mount source=c:\Users\hyang\bolt,target=/usr/app/bolt,type=bind --mount type=volume,src=vscode,dst=/vscode -l devcontainer.local_folder=c:\Users\hyang\bolt -l devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json -e PYTHON_PATH=/usr/local/lib/python3.11 -e AWS_PROFILE=bolt -e DB_HOST=172.24.0.2 -e DB_PASSWORD=bolt_pass --network=bolt_bolt --ip=172.24.0.3 --entrypoint /bin/sh vsc-bolt-b91bca347d922e6059c1e5f72d2f3c6ef16b69ea1161d91a0f377337b074c12a -c echo Container started
+[2023-04-26T13:00:15.544Z] 
+[2023-04-26T13:00:16.016Z] Stop (586 ms): Starting container
+[2023-04-26T13:00:16.016Z] Start: Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt --filter label=devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json
+[2023-04-26T13:00:16.019Z] Stop (612 ms): Run: docker events --format {{json .}} --filter event=start
+[2023-04-26T13:00:16.022Z] Container started
+[2023-04-26T13:00:16.164Z] Stop (148 ms): Run: docker ps -q -a --filter label=devcontainer.local_folder=c:\Users\hyang\bolt --filter label=devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json
+[2023-04-26T13:00:16.164Z] Start: Run: docker inspect --type container 97d8198853b4
+[2023-04-26T13:00:16.300Z] Stop (136 ms): Run: docker inspect --type container 97d8198853b4
+[2023-04-26T13:00:16.301Z] Start: Inspecting container
+[2023-04-26T13:00:16.301Z] Start: Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:16.422Z] Stop (121 ms): Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:16.422Z] Stop (121 ms): Inspecting container
+[2023-04-26T13:00:16.423Z] Start: Run in container: /bin/sh
+[2023-04-26T13:00:16.440Z] Start: Run in container: uname -m
+[2023-04-26T13:00:16.616Z] x86_64
+[2023-04-26T13:00:16.616Z] 
+[2023-04-26T13:00:16.616Z] Stop (176 ms): Run in container: uname -m
+[2023-04-26T13:00:16.616Z] Start: Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null
+[2023-04-26T13:00:16.618Z] PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+[2023-04-26T13:00:16.618Z] 
+[2023-04-26T13:00:16.618Z] Stop (2 ms): Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null
+[2023-04-26T13:00:16.618Z] Start: Run in container: cat /etc/passwd
+[2023-04-26T13:00:16.620Z] Stop (2 ms): Run in container: cat /etc/passwd
+[2023-04-26T13:00:16.621Z] Start: Run in container: test -f '/var/devcontainer/.patchEtcEnvironmentMarker'
+[2023-04-26T13:00:16.622Z] 
+[2023-04-26T13:00:16.622Z] 
+[2023-04-26T13:00:16.622Z] Exit code 1
+[2023-04-26T13:00:16.622Z] Stop (1 ms): Run in container: test -f '/var/devcontainer/.patchEtcEnvironmentMarker'
+[2023-04-26T13:00:16.623Z] Start: Run in container: test ! -f '/var/devcontainer/.patchEtcEnvironmentMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcEnvironmentMarker' ; } 2> /dev/null
+[2023-04-26T13:00:16.625Z] 
+[2023-04-26T13:00:16.625Z] 
+[2023-04-26T13:00:16.625Z] Stop (2 ms): Run in container: test ! -f '/var/devcontainer/.patchEtcEnvironmentMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcEnvironmentMarker' ; } 2> /dev/null
+[2023-04-26T13:00:16.625Z] Start: Run in container: cat >> /etc/environment <<'etcEnvrionmentEOF'
+[2023-04-26T13:00:16.627Z] 
+[2023-04-26T13:00:16.627Z] 
+[2023-04-26T13:00:16.627Z] Stop (2 ms): Run in container: cat >> /etc/environment <<'etcEnvrionmentEOF'
+[2023-04-26T13:00:16.627Z] Start: Run in container: test -f '/var/devcontainer/.patchEtcProfileMarker'
+[2023-04-26T13:00:16.628Z] 
+[2023-04-26T13:00:16.628Z] 
+[2023-04-26T13:00:16.628Z] Exit code 1
+[2023-04-26T13:00:16.628Z] Stop (1 ms): Run in container: test -f '/var/devcontainer/.patchEtcProfileMarker'
+[2023-04-26T13:00:16.629Z] Start: Run in container: test ! -f '/var/devcontainer/.patchEtcProfileMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcProfileMarker' ; } 2> /dev/null
+[2023-04-26T13:00:16.631Z] 
+[2023-04-26T13:00:16.631Z] 
+[2023-04-26T13:00:16.631Z] Stop (2 ms): Run in container: test ! -f '/var/devcontainer/.patchEtcProfileMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcProfileMarker' ; } 2> /dev/null
+[2023-04-26T13:00:16.631Z] Start: Run in container: sed -i -E 's/((^|\s)PATH=)([^\$]*)$/\1${PATH:-\3}/g' /etc/profile || true
+[2023-04-26T13:00:16.634Z] 
+[2023-04-26T13:00:16.634Z] 
+[2023-04-26T13:00:16.634Z] Stop (3 ms): Run in container: sed -i -E 's/((^|\s)PATH=)([^\$]*)$/\1${PATH:-\3}/g' /etc/profile || true
+[2023-04-26T13:00:16.634Z] Stop (22070 ms): Resolving Remote
+[2023-04-26T13:00:16.645Z] Stop (22716 ms): Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js up --user-data-folder c:\Users\hyang\AppData\Roaming\Code\User\globalStorage\ms-vscode-remote.remote-containers\data --container-session-data-folder /tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105 --workspace-folder c:\Users\hyang\bolt --workspace-mount-consistency cached --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --default-user-env-probe loginInteractiveShell --mount type=volume,source=vscode,target=/vscode,external=true --skip-post-create --update-remote-user-uid-default on --mount-workspace-git-root true
+[2023-04-26T13:00:16.646Z] Start: Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:16.789Z] Stop (143 ms): Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:16.790Z] Start: Run: docker exec -i -u root 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 /bin/sh -c echo "New container started. Keep-alive process started." ; export VSCODE_REMOTE_CONTAINERS_SESSION=a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105 ; /bin/sh
+[2023-04-26T13:00:16.790Z] Start: Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js read-configuration --workspace-folder c:\Users\hyang\bolt --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --container-id 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --mount-workspace-git-root true
+[2023-04-26T13:00:16.985Z] New container started. Keep-alive process started.
+[2023-04-26T13:00:17.034Z] @devcontainers/cli 0.35.0. Node.js v16.14.2. win32 10.0.22621 x64.
+[2023-04-26T13:00:17.034Z] Start: Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:17.160Z] Stop (126 ms): Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:17.169Z] Stop (379 ms): Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js read-configuration --workspace-folder c:\Users\hyang\bolt --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --container-id 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --mount-workspace-git-root true
+[2023-04-26T13:00:17.170Z] Start: Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js read-configuration --workspace-folder c:\Users\hyang\bolt --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --container-id 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --include-merged-configuration --mount-workspace-git-root true
+[2023-04-26T13:00:17.401Z] @devcontainers/cli 0.35.0. Node.js v16.14.2. win32 10.0.22621 x64.
+[2023-04-26T13:00:17.401Z] Start: Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:17.530Z] Stop (129 ms): Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:17.541Z] Stop (371 ms): Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js read-configuration --workspace-folder c:\Users\hyang\bolt --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --container-id 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --include-merged-configuration --mount-workspace-git-root true
+[2023-04-26T13:00:17.541Z] Start: Inspecting container
+[2023-04-26T13:00:17.541Z] Start: Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:17.684Z] Stop (143 ms): Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:17.684Z] Stop (143 ms): Inspecting container
+[2023-04-26T13:00:17.685Z] Start: Run in container: /bin/sh
+[2023-04-26T13:00:17.712Z] Start: Run in container: uname -m
+[2023-04-26T13:00:17.973Z] x86_64
+[2023-04-26T13:00:17.974Z] 
+[2023-04-26T13:00:17.974Z] Stop (262 ms): Run in container: uname -m
+[2023-04-26T13:00:17.974Z] Start: Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null
+[2023-04-26T13:00:17.976Z] PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+[2023-04-26T13:00:17.976Z] 
+[2023-04-26T13:00:17.976Z] Stop (2 ms): Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null
+[2023-04-26T13:00:17.976Z] Start: Run in container: cat /etc/passwd
+[2023-04-26T13:00:17.978Z] Stop (2 ms): Run in container: cat /etc/passwd
+[2023-04-26T13:00:17.979Z] Start: Run in container: command -v git >/dev/null 2>&1 && cd '/usr/app/bolt' && test -d .git && test "$(stat -c %u .)" != "$(id -u)"
+[2023-04-26T13:00:17.983Z] 
+[2023-04-26T13:00:17.983Z] 
+[2023-04-26T13:00:17.983Z] Exit code 1
+[2023-04-26T13:00:17.983Z] Stop (4 ms): Run in container: command -v git >/dev/null 2>&1 && cd '/usr/app/bolt' && test -d .git && test "$(stat -c %u .)" != "$(id -u)"
+[2023-04-26T13:00:17.983Z] Start: Updating configuration state
+[2023-04-26T13:00:17.987Z] Stop (4 ms): Updating configuration state
+[2023-04-26T13:00:17.988Z] Start: Setup shutdown monitor
+[2023-04-26T13:00:17.989Z] Forking shutdown monitor: c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\shutdown\shutdownMonitorProcess \\.\pipe\vscode-remote-containers-8e04c724-7c44-445f-9c42-3406b24192c0-sock singleContainer Debug c:\Users\hyang\AppData\Roaming\Code\logs\20230426T082920\window1\exthost\ms-vscode-remote.remote-containers 1682513992778
+[2023-04-26T13:00:17.997Z] Stop (9 ms): Setup shutdown monitor
+[2023-04-26T13:00:17.997Z] Start: Run in container: test -d /usr/app/bolt/.vscode-server
+[2023-04-26T13:00:18.000Z] 
+[2023-04-26T13:00:18.001Z] 
+[2023-04-26T13:00:18.001Z] Stop (4 ms): Run in container: test -d /usr/app/bolt/.vscode-server
+[2023-04-26T13:00:18.001Z] Start: Run in container: test ! -f '/usr/app/bolt/.vscode-server/data/Machine/.writeMachineSettingsMarker' && set -o noclobber && mkdir -p '/usr/app/bolt/.vscode-server/data/Machine' && { > '/usr/app/bolt/.vscode-server/data/Machine/.writeMachineSettingsMarker' ; } 2> /dev/null
+[2023-04-26T13:00:18.007Z] 
+[2023-04-26T13:00:18.007Z] 
+[2023-04-26T13:00:18.007Z] Exit code 1
+[2023-04-26T13:00:18.007Z] Stop (6 ms): Run in container: test ! -f '/usr/app/bolt/.vscode-server/data/Machine/.writeMachineSettingsMarker' && set -o noclobber && mkdir -p '/usr/app/bolt/.vscode-server/data/Machine' && { > '/usr/app/bolt/.vscode-server/data/Machine/.writeMachineSettingsMarker' ; } 2> /dev/null
+[2023-04-26T13:00:18.007Z] Start: Run in container: cat /usr/app/bolt/.vscode-server/data/Machine/settings.json
+[2023-04-26T13:00:18.014Z] {
+	"[python]": {
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll": true,
+			"source.organizeImports": true
+		}
+	},
+	"python.formatting.provider": "black"
+}
+[2023-04-26T13:00:18.014Z] 
+[2023-04-26T13:00:18.014Z] Stop (7 ms): Run in container: cat /usr/app/bolt/.vscode-server/data/Machine/settings.json
+[2023-04-26T13:00:18.015Z] Start: Run in container: test -d /usr/app/bolt/.vscode-server/bin/704ed70d4fd1c6bd6342c436f1ede30d1cff4710
+[2023-04-26T13:00:18.020Z] 
+[2023-04-26T13:00:18.020Z] 
+[2023-04-26T13:00:18.020Z] Stop (5 ms): Run in container: test -d /usr/app/bolt/.vscode-server/bin/704ed70d4fd1c6bd6342c436f1ede30d1cff4710
+[2023-04-26T13:00:18.020Z] Start: Run in container: test -d /vscode/vscode-server/bin/linux-x64/704ed70d4fd1c6bd6342c436f1ede30d1cff4710
+[2023-04-26T13:00:18.021Z] 
+[2023-04-26T13:00:18.022Z] 
+[2023-04-26T13:00:18.022Z] Stop (2 ms): Run in container: test -d /vscode/vscode-server/bin/linux-x64/704ed70d4fd1c6bd6342c436f1ede30d1cff4710
+[2023-04-26T13:00:18.022Z] Start: Run in container: touch '/vscode/vscode-server/bin/linux-x64/704ed70d4fd1c6bd6342c436f1ede30d1cff4710'
+[2023-04-26T13:00:18.022Z] Start: Launching Dev Containers helper.
+[2023-04-26T13:00:18.022Z] ssh-agent: SSH_AUTH_SOCK not set on local host.
+[2023-04-26T13:00:18.022Z] ssh-agent: SSH_AUTH_SOCK in container (/tmp/vscode-ssh-auth-b7daf94a-c808-4844-bc78-0922dbf87edb.sock) forwarded to local host (\\.\pipe\openssh-ssh-agent).
+[2023-04-26T13:00:18.022Z] X11 forwarding: DISPLAY not set on local host.
+[2023-04-26T13:00:18.024Z] 
+[2023-04-26T13:00:18.025Z] 
+[2023-04-26T13:00:18.025Z] Stop (3 ms): Run in container: touch '/vscode/vscode-server/bin/linux-x64/704ed70d4fd1c6bd6342c436f1ede30d1cff4710'
+[2023-04-26T13:00:18.025Z] Start: Run in container: gpgconf --list-dir agent-socket
+[2023-04-26T13:00:18.028Z] /usr/app/bolt/.gnupg/S.gpg-agent
+[2023-04-26T13:00:18.028Z] 
+[2023-04-26T13:00:18.028Z] Stop (3 ms): Run in container: gpgconf --list-dir agent-socket
+[2023-04-26T13:00:18.028Z] Start: Run in container: gpgconf --list-dir homedir
+[2023-04-26T13:00:18.031Z] /usr/app/bolt/.gnupg
+[2023-04-26T13:00:18.031Z] 
+[2023-04-26T13:00:18.031Z] Stop (3 ms): Run in container: gpgconf --list-dir homedir
+[2023-04-26T13:00:18.031Z] Start: Run in container: ls '/usr/app/bolt/.gnupg/private-keys-v1.d' 2>/dev/null
+[2023-04-26T13:00:18.035Z] 
+[2023-04-26T13:00:18.035Z] 
+[2023-04-26T13:00:18.035Z] Exit code 2
+[2023-04-26T13:00:18.035Z] Stop (4 ms): Run in container: ls '/usr/app/bolt/.gnupg/private-keys-v1.d' 2>/dev/null
+[2023-04-26T13:00:18.036Z] Start: Run: gpgconf --list-dir agent-extra-socket
+[2023-04-26T13:00:18.073Z] gpg-agent: No agent-extra-socket found on local host.
+[2023-04-26T13:00:18.073Z] Start: Run in container: command -v docker >/dev/null 2>&1
+[2023-04-26T13:00:18.075Z] 
+[2023-04-26T13:00:18.075Z] 
+[2023-04-26T13:00:18.075Z] Exit code 127
+[2023-04-26T13:00:18.075Z] Stop (2 ms): Run in container: command -v docker >/dev/null 2>&1
+[2023-04-26T13:00:18.076Z] Start: Run in container: /bin/sh
+[2023-04-26T13:00:18.076Z] Stop (54 ms): Launching Dev Containers helper.
+[2023-04-26T13:00:18.076Z] userEnvProbe: loginInteractiveShell (default)
+[2023-04-26T13:00:18.076Z] Start: Run in container: test -f '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json'
+[2023-04-26T13:00:18.078Z] 
+[2023-04-26T13:00:18.078Z] 
+[2023-04-26T13:00:18.078Z] Exit code 1
+[2023-04-26T13:00:18.078Z] Stop (2 ms): Run in container: test -f '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json'
+[2023-04-26T13:00:18.078Z] userEnvProbe: not found in cache
+[2023-04-26T13:00:18.079Z] userEnvProbe shell: /bin/bash
+[2023-04-26T13:00:18.081Z] Start: Run in container: # Test for /usr/app/bolt/.ssh/known_hosts and ssh
+[2023-04-26T13:00:18.083Z] ssh not found
+[2023-04-26T13:00:18.083Z] 
+[2023-04-26T13:00:18.083Z] Exit code 1
+[2023-04-26T13:00:18.083Z] Stop (2 ms): Run in container: # Test for /usr/app/bolt/.ssh/known_hosts and ssh
+[2023-04-26T13:00:18.083Z] Start: Run in container: command -v git >/dev/null 2>&1 && git config --system --replace-all credential.helper '!f() { /usr/app/bolt/.vscode-server/bin/704ed70d4fd1c6bd6342c436f1ede30d1cff4710/node /tmp/vscode-remote-containers-b7daf94a-c808-4844-bc78-0922dbf87edb.js git-credential-helper $*; }; f' || true
+[2023-04-26T13:00:18.109Z] Start: Run in container: echo ~
+[2023-04-26T13:00:18.117Z] 
+[2023-04-26T13:00:18.118Z] 
+[2023-04-26T13:00:18.118Z] Stop (35 ms): Run in container: command -v git >/dev/null 2>&1 && git config --system --replace-all credential.helper '!f() { /usr/app/bolt/.vscode-server/bin/704ed70d4fd1c6bd6342c436f1ede30d1cff4710/node /tmp/vscode-remote-containers-b7daf94a-c808-4844-bc78-0922dbf87edb.js git-credential-helper $*; }; f' || true
+[2023-04-26T13:00:18.118Z] Start: Run in container: for pid in `cd /proc && ls -d [0-9]*`; do { echo $pid ; readlink /proc/$pid/cwd || echo ; readlink /proc/$pid/ns/mnt || echo ; cat /proc/$pid/stat | tr "
+[2023-04-26T13:00:18.139Z] Stop (21 ms): Run in container: for pid in `cd /proc && ls -d [0-9]*`; do { echo $pid ; readlink /proc/$pid/cwd || echo ; readlink /proc/$pid/ns/mnt || echo ; cat /proc/$pid/stat | tr "
+[2023-04-26T13:00:18.140Z] Start: Run in container: cat '/usr/app/bolt/.vscode-server/bin/704ed70d4fd1c6bd6342c436f1ede30d1cff4710/product.json'
+[2023-04-26T13:00:18.145Z] Stop (5 ms): Run in container: cat '/usr/app/bolt/.vscode-server/bin/704ed70d4fd1c6bd6342c436f1ede30d1cff4710/product.json'
+[2023-04-26T13:00:18.146Z] Start: Run in container: cat '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710' 2>/dev/null || (umask 377 && echo '8db9010f-0123-4052-860f-662066be4062' >'/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710-2f90be3b-791d-4eee-aa28-96c88e5bb0da' && mv -n '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710-2f90be3b-791d-4eee-aa28-96c88e5bb0da' '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710' && rm -f '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710-2f90be3b-791d-4eee-aa28-96c88e5bb0da' && cat '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710')
+[2023-04-26T13:00:18.158Z] 0628eb16-886d-484b-b906-32e21d9ea641
+[2023-04-26T13:00:18.159Z] 
+[2023-04-26T13:00:18.159Z] Stop (13 ms): Run in container: cat '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710' 2>/dev/null || (umask 377 && echo '8db9010f-0123-4052-860f-662066be4062' >'/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710-2f90be3b-791d-4eee-aa28-96c88e5bb0da' && mv -n '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710-2f90be3b-791d-4eee-aa28-96c88e5bb0da' '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710' && rm -f '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710-2f90be3b-791d-4eee-aa28-96c88e5bb0da' && cat '/usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710')
+[2023-04-26T13:00:18.159Z] Start: Starting VS Code Server
+[2023-04-26T13:00:18.159Z] Start: Preparing Extensions
+[2023-04-26T13:00:18.160Z] Start: Run in container: test ! -f '/usr/app/bolt/.vscode-server/data/Machine/.installExtensionsMarker' && set -o noclobber && mkdir -p '/usr/app/bolt/.vscode-server/data/Machine' && { > '/usr/app/bolt/.vscode-server/data/Machine/.installExtensionsMarker' ; } 2> /dev/null
+[2023-04-26T13:00:18.165Z] 
+[2023-04-26T13:00:18.165Z] 
+[2023-04-26T13:00:18.165Z] Exit code 1
+[2023-04-26T13:00:18.165Z] Stop (5 ms): Run in container: test ! -f '/usr/app/bolt/.vscode-server/data/Machine/.installExtensionsMarker' && set -o noclobber && mkdir -p '/usr/app/bolt/.vscode-server/data/Machine' && { > '/usr/app/bolt/.vscode-server/data/Machine/.installExtensionsMarker' ; } 2> /dev/null
+[2023-04-26T13:00:18.166Z] Extensions cache, install extensions: MS-CEINTL.vscode-language-pack-zh-hans
+[2023-04-26T13:00:18.166Z] Start: Run in container: test -d /usr/app/bolt/.vscode-server/extensionsCache && ls /usr/app/bolt/.vscode-server/extensionsCache || true
+[2023-04-26T13:00:18.176Z] amazonwebservices.aws-toolkit-vscode-1.70.0
+charliermarsh.ruff-2023.12.0-linux-x64
+ms-ceintl.vscode-language-pack-zh-hans-1.77.2023040509
+ms-python.python-2023.6.1
+ms-python.vscode-pylance-2023.4.30
+ms-toolsai.jupyter-2023.3.1201040234
+ms-toolsai.jupyter-keymap-1.1.0
+ms-toolsai.jupyter-renderers-1.0.15
+ms-toolsai.vscode-jupyter-cell-tags-0.1.8
+ms-toolsai.vscode-jupyter-slideshow-0.1.5
+njpwerner.autodocstring-0.6.1
+yzhang.markdown-all-in-one-3.5.1
+[2023-04-26T13:00:18.176Z] 
+[2023-04-26T13:00:18.176Z] Stop (10 ms): Run in container: test -d /usr/app/bolt/.vscode-server/extensionsCache && ls /usr/app/bolt/.vscode-server/extensionsCache || true
+[2023-04-26T13:00:18.176Z] Start: Run in container: test -d /vscode/vscode-server/extensionsCache && ls /vscode/vscode-server/extensionsCache || true
+[2023-04-26T13:00:18.179Z] amazonwebservices.aws-toolkit-vscode-1.69.0
+amazonwebservices.aws-toolkit-vscode-1.69.0.sigzip
+amazonwebservices.aws-toolkit-vscode-1.70.0
+charliermarsh.ruff-2023.12.0-linux-x64
+ms-ceintl.vscode-language-pack-zh-hans-1.77.2023040509
+ms-python.python-2023.6.1
+ms-python.vscode-pylance-2023.4.30
+ms-toolsai.jupyter-2023.3.1201040234
+ms-toolsai.jupyter-keymap-1.1.0
+ms-toolsai.jupyter-renderers-1.0.15
+ms-toolsai.vscode-jupyter-cell-tags-0.1.8
+ms-toolsai.vscode-jupyter-slideshow-0.1.5
+njpwerner.autodocstring-0.6.1
+njpwerner.autodocstring-0.6.1.sigzip
+yzhang.markdown-all-in-one-3.5.1
+yzhang.markdown-all-in-one-3.5.1.sigzip
+[2023-04-26T13:00:18.179Z] 
+[2023-04-26T13:00:18.179Z] Stop (3 ms): Run in container: test -d /vscode/vscode-server/extensionsCache && ls /vscode/vscode-server/extensionsCache || true
+[2023-04-26T13:00:18.179Z] Extensions cache, link in container: None
+[2023-04-26T13:00:18.180Z] Optimizing extensions for quality: stable
+[2023-04-26T13:00:18.180Z] Stop (21 ms): Preparing Extensions
+[2023-04-26T13:00:18.180Z] Start: Run in container: /usr/app/bolt/.vscode-server/bin/704ed70d4fd1c6bd6342c436f1ede30d1cff4710/bin/code-server --log debug --force-disable-user-env --server-data-dir /usr/app/bolt/.vscode-server --use-host-proxy --telemetry-level all --accept-server-license-terms --host 127.0.0.1 --port 0 --connection-token-file /usr/app/bolt/.vscode-server/data/Machine/.connection-token-704ed70d4fd1c6bd6342c436f1ede30d1cff4710 --extensions-download-dir /usr/app/bolt/.vscode-server/extensionsCache --install-extension MS-CEINTL.vscode-language-pack-zh-hans --start-server --disable-websocket-compression
+[2023-04-26T13:00:18.335Z] /usr/app/bolt
+[2023-04-26T13:00:18.335Z] 
+[2023-04-26T13:00:18.335Z] Stop (226 ms): Run in container: echo ~
+[2023-04-26T13:00:18.335Z] Start: Run in container: cat <<'EOF-/tmp/vscode-remote-containers-b7daf94a-c808-4844-bc78-0922dbf87edb.js' >/tmp/vscode-remote-containers-b7daf94a-c808-4844-bc78-0922dbf87edb.js
+[2023-04-26T13:00:18.337Z] 
+[2023-04-26T13:00:18.338Z] 
+[2023-04-26T13:00:18.338Z] Stop (3 ms): Run in container: cat <<'EOF-/tmp/vscode-remote-containers-b7daf94a-c808-4844-bc78-0922dbf87edb.js' >/tmp/vscode-remote-containers-b7daf94a-c808-4844-bc78-0922dbf87edb.js
+[2023-04-26T13:00:18.338Z] Start: Run in container: cat <<'EOF-/tmp/vscode-remote-containers-server-b7daf94a-c808-4844-bc78-0922dbf87edb.js' >/tmp/vscode-remote-containers-server-b7daf94a-c808-4844-bc78-0922dbf87edb.js_1682514018338
+[2023-04-26T13:00:18.341Z] 
+[2023-04-26T13:00:18.341Z] 
+[2023-04-26T13:00:18.342Z] Stop (4 ms): Run in container: cat <<'EOF-/tmp/vscode-remote-containers-server-b7daf94a-c808-4844-bc78-0922dbf87edb.js' >/tmp/vscode-remote-containers-server-b7daf94a-c808-4844-bc78-0922dbf87edb.js_1682514018338
+[2023-04-26T13:00:18.396Z] userEnvProbe PATHs:
+Probe:     '/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+Container: '/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+[2023-04-26T13:00:18.396Z] Start: Run in container: mkdir -p '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105' && cat > '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json' << 'envJSON'
+[2023-04-26T13:00:18.399Z] 
+[2023-04-26T13:00:18.399Z] 
+[2023-04-26T13:00:18.399Z] Stop (3 ms): Run in container: mkdir -p '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105' && cat > '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json' << 'envJSON'
+[2023-04-26T13:00:18.423Z] *
+* Visual Studio Code Server
+*
+* By using the software, you agree to
+* the Visual Studio Code Server License Terms (https://aka.ms/vscode-server-license) and
+* the Microsoft Privacy Statement (https://privacy.microsoft.com/en-US/privacystatement).
+*
+[2023-04-26T13:00:18.426Z] Server bound to 127.0.0.1:45993 (IPv4)
+Extension host agent listening on 45993
+
+[2023-04-26T13:00:18.426Z] Stop (267 ms): Starting VS Code Server
+[2023-04-26T13:00:18.426Z] Start: Run in container: echo 45993 >'/usr/app/bolt/.vscode-server/data/Machine/.devport-704ed70d4fd1c6bd6342c436f1ede30d1cff4710'
+[2023-04-26T13:00:18.433Z] 
+[2023-04-26T13:00:18.433Z] 
+[2023-04-26T13:00:18.433Z] Stop (7 ms): Run in container: echo 45993 >'/usr/app/bolt/.vscode-server/data/Machine/.devport-704ed70d4fd1c6bd6342c436f1ede30d1cff4710'
+[2023-04-26T13:00:18.433Z] Port forwarding for container port 45993 starts listening on local port.
+[2023-04-26T13:00:18.434Z] Port forwarding local port 45993 to container port 45993
+[2023-04-26T13:00:18.435Z] Start: Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js run-user-commands --user-data-folder c:\Users\hyang\AppData\Roaming\Code\User\globalStorage\ms-vscode-remote.remote-containers\data --container-session-data-folder /tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105 --workspace-folder c:\Users\hyang\bolt --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --container-id 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --default-user-env-probe loginInteractiveShell --skip-non-blocking-commands true --prebuild false --stop-for-personalization true --remote-env REMOTE_CONTAINERS_IPC=/tmp/vscode-remote-containers-ipc-b7daf94a-c808-4844-bc78-0922dbf87edb.sock --remote-env SSH_AUTH_SOCK=/tmp/vscode-ssh-auth-b7daf94a-c808-4844-bc78-0922dbf87edb.sock --remote-env REMOTE_CONTAINERS=true --mount-workspace-git-root true --terminal-columns 198 --terminal-rows 8 --dotfiles-target-path ~/dotfiles
+[2023-04-26T13:00:18.539Z] [13:00:18] 
+
+
+
+
+[2023-04-26T13:00:18.578Z] [13:00:18] Installing extensions...
+[2023-04-26T13:00:18.581Z] [13:00:18] Extension host agent started.
+[2023-04-26T13:00:18.611Z] [13:00:18] No uninstalled extensions found.
+[2023-04-26T13:00:18.700Z] [13:00:18] ComputeTargetPlatform: linux-x64
+[2023-04-26T13:00:18.709Z] @devcontainers/cli 0.35.0. Node.js v16.14.2. win32 10.0.22621 x64.
+[2023-04-26T13:00:18.709Z] Start: Run: docker buildx version
+[2023-04-26T13:00:18.721Z] [13:00:18] Extension 'ms-ceintl.vscode-language-pack-zh-hans' v1.77.2023040509 is already installed. Use '--force' option to update to latest version or provide '@<version>' to install a specific version, for example: 'ms-ceintl.vscode-language-pack-zh-hans@1.2.3'.
+[2023-04-26T13:00:18.934Z] Stop (225 ms): Run: docker buildx version
+[2023-04-26T13:00:18.934Z] github.com/docker/buildx v0.10.4 c513d34049e499c53468deac6c4267ee72948f02
+[2023-04-26T13:00:18.934Z] 
+[2023-04-26T13:00:18.937Z] Start: Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:19.070Z] Stop (133 ms): Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:19.071Z] Start: Inspecting container
+[2023-04-26T13:00:19.071Z] Start: Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:19.190Z] Stop (119 ms): Run: docker inspect --type container 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083
+[2023-04-26T13:00:19.191Z] Stop (120 ms): Inspecting container
+[2023-04-26T13:00:19.191Z] Start: Run in container: /bin/sh
+[2023-04-26T13:00:19.208Z] Start: Run in container: uname -m
+[2023-04-26T13:00:19.385Z] x86_64
+[2023-04-26T13:00:19.385Z] 
+[2023-04-26T13:00:19.385Z] Stop (177 ms): Run in container: uname -m
+[2023-04-26T13:00:19.385Z] Start: Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null
+[2023-04-26T13:00:19.387Z] PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+[2023-04-26T13:00:19.387Z] 
+[2023-04-26T13:00:19.387Z] Stop (2 ms): Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null
+[2023-04-26T13:00:19.387Z] Start: Run in container: cat /etc/passwd
+[2023-04-26T13:00:19.389Z] Stop (2 ms): Run in container: cat /etc/passwd
+[2023-04-26T13:00:19.390Z] userEnvProbe: loginInteractiveShell (default)
+[2023-04-26T13:00:19.390Z] Start: Run in container: test -f '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json'
+[2023-04-26T13:00:19.392Z] 
+[2023-04-26T13:00:19.392Z] 
+[2023-04-26T13:00:19.392Z] Stop (2 ms): Run in container: test -f '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json'
+[2023-04-26T13:00:19.392Z] Start: Run in container: mkdir -p '/usr/app/bolt/.devcontainer' && CONTENT="$(cat '/usr/app/bolt/.devcontainer/.onCreateCommandMarker' 2>/dev/null || echo ENOENT)" && [ "${CONTENT:-2023-04-26T13:00:15.592014864Z}" != '2023-04-26T13:00:15.592014864Z' ] && echo '2023-04-26T13:00:15.592014864Z' > '/usr/app/bolt/.devcontainer/.onCreateCommandMarker'
+[2023-04-26T13:00:19.406Z] 
+[2023-04-26T13:00:19.406Z] 
+[2023-04-26T13:00:19.406Z] Stop (14 ms): Run in container: mkdir -p '/usr/app/bolt/.devcontainer' && CONTENT="$(cat '/usr/app/bolt/.devcontainer/.onCreateCommandMarker' 2>/dev/null || echo ENOENT)" && [ "${CONTENT:-2023-04-26T13:00:15.592014864Z}" != '2023-04-26T13:00:15.592014864Z' ] && echo '2023-04-26T13:00:15.592014864Z' > '/usr/app/bolt/.devcontainer/.onCreateCommandMarker'
+[2023-04-26T13:00:19.406Z] Start: Run in container: cat '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json'
+[2023-04-26T13:00:19.407Z] Running the onCreateCommand from devcontainer.json...
+
+[2023-04-26T13:00:19.408Z] {
+	"DB_PASSWORD": "bolt_pass",
+	"PYTHONUNBUFFERED": "1",
+	"HOSTNAME": "97d8198853b4",
+	"PYTHON_VERSION": "3.11.3",
+	"AWS_PROFILE": "bolt",
+	"REMOTE_CONTAINERS_IPC": "/tmp/vscode-remote-containers-ipc-b7daf94a-c808-4844-bc78-0922dbf87edb.sock",
+	"PYTHON_SETUPTOOLS_VERSION": "65.5.1",
+	"HOME": "/usr/app/bolt",
+	"LANG": "C.UTF-8",
+	"GPG_KEY": "A035C8C19219BA821ECEA86B64E628F8D684696D",
+	"https_proxy": "https://127.0.0.1:7890",
+	"PYTHON_PATH": "/usr/local/lib/python3.11",
+	"PYTHONPATH": "/usr/app/bolt:",
+	"DB_HOST": "172.24.0.2",
+	"REMOTE_CONTAINERS_SOCKETS": "[\"/tmp/vscode-ssh-auth-b7daf94a-c808-4844-bc78-0922dbf87edb.sock\"]",
+	"PIP_DISABLE_PIP_VERSION_CHECK": "on",
+	"SHLVL": "1",
+	"HTTPS_PROXY": "https://127.0.0.1:7890",
+	"HTTP_PROXY": "http://127.0.0.1:7890",
+	"PYTHON_PIP_VERSION": "22.3.1",
+	"http_proxy": "http://127.0.0.1:7890",
+	"PYTHON_GET_PIP_SHA256": "394be00f13fa1b9aaa47e911bdb59a09c3b2986472130f30aa0bfaf7f3980637",
+	"PYTHON_GET_PIP_URL": "https://github.com/pypa/get-pip/raw/d5cb0afaf23b8520f1bbcfed521017b4a95f5c01/public/get-pip.py",
+	"PATH": "/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+	"PIP_NO_CACHE_DIR": "off",
+	"_": "/bin/cat"
+}
+[2023-04-26T13:00:19.408Z] 
+[2023-04-26T13:00:19.408Z] Stop (2 ms): Run in container: cat '/tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105/env-loginInteractiveShell.json'
+[2023-04-26T13:00:19.409Z] Start: Run in container: /bin/sh -c pip install -r dev-requirements.txt
+[2023-04-26T13:00:19.531Z] 
+[2023-04-26T13:00:20.015Z] WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', NewConnectionError('<pip._vendor.urllib3.co
+nnection.HTTPSConnection object at 0x7fe03c321490>: Failed to establish a new connection: [Errno 111] Connection refused'))': /simple/aiohttp/
+[2023-04-26T13:00:20.523Z] WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', NewConnectionError('<pip._vendor.urllib3.co
+nnection.HTTPSConnection object at 0x7fe03ac2b250>: Failed to establish a new connection: [Errno 111] Connection refused'))': /simple/aiohttp/
+[2023-04-26T13:00:21.513Z] WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', NewConnectionError('<pip._vendor.urllib3.co
+nnection.HTTPSConnection object at 0x7fe03ac2bdd0>: Failed to establish a new connection: [Errno 111] Connection refused'))': /simple/aiohttp/
+[2023-04-26T13:00:23.542Z] WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', NewConnectionError('<pip._vendor.urllib3.co
+nnection.HTTPSConnection object at 0x7fe03ac2b9d0>: Failed to establish a new connection: [Errno 111] Connection refused'))': /simple/aiohttp/
+[2023-04-26T13:00:27.531Z] WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', NewConnectionError('<pip._vendor.urllib3.co
+nnection.HTTPSConnection object at 0x7fe03ac38850>: Failed to establish a new connection: [Errno 111] Connection refused'))': /simple/aiohttp/
+[2023-04-26T13:00:27.561Z] ERROR: Could not find a version that satisfies the requirement aiohttp (from versions: none)
+ERROR: No matching distribution found for aiohttp
+[2023-04-26T13:00:27.684Z] Stop (8275 ms): Run in container: /bin/sh -c pip install -r dev-requirements.txt
+[2023-04-26T13:00:27.684Z] onCreateCommand failed with exit code 1. Skipping any further user-provided commands.
+[2023-04-26T13:00:27.685Z] Error: Command failed: /bin/sh -c pip install -r dev-requirements.txt
+[2023-04-26T13:00:27.685Z]     at xL (c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js:1703:130)
+[2023-04-26T13:00:27.685Z]     at process.processTicksAndRejections (node:internal/process/task_queues:96:5)
+[2023-04-26T13:00:27.685Z]     at async m1 (c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js:1695:4370)
+[2023-04-26T13:00:27.685Z]     at async h1 (c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js:1695:3727)
+[2023-04-26T13:00:27.685Z]     at async p1 (c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js:1695:2748)
+[2023-04-26T13:00:27.685Z]     at async Aae (c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js:2059:35648)
+[2023-04-26T13:00:27.685Z]     at async yae (c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js:2059:33007)
+[2023-04-26T13:00:27.695Z] Stop (9260 ms): Run: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js run-user-commands --user-data-folder c:\Users\hyang\AppData\Roaming\Code\User\globalStorage\ms-vscode-remote.remote-containers\data --container-session-data-folder /tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105 --workspace-folder c:\Users\hyang\bolt --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --container-id 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --default-user-env-probe loginInteractiveShell --skip-non-blocking-commands true --prebuild false --stop-for-personalization true --remote-env REMOTE_CONTAINERS_IPC=/tmp/vscode-remote-containers-ipc-b7daf94a-c808-4844-bc78-0922dbf87edb.sock --remote-env SSH_AUTH_SOCK=/tmp/vscode-ssh-auth-b7daf94a-c808-4844-bc78-0922dbf87edb.sock --remote-env REMOTE_CONTAINERS=true --mount-workspace-git-root true --terminal-columns 198 --terminal-rows 8 --dotfiles-target-path ~/dotfiles
+[2023-04-26T13:00:27.695Z] Exit code 1
+[2023-04-26T13:00:27.698Z] Command failed: C:\Users\hyang\AppData\Local\Programs\Microsoft VS Code\Code.exe --ms-enable-electron-run-as-node c:\Users\hyang\.vscode\extensions\ms-vscode-remote.remote-containers-0.288.1\dist\spec-node\devContainersSpecCLI.js run-user-commands --user-data-folder c:\Users\hyang\AppData\Roaming\Code\User\globalStorage\ms-vscode-remote.remote-containers\data --container-session-data-folder /tmp/devcontainers-a2242b4d-19f7-4375-bde4-15bfd796f4971682513992105 --workspace-folder c:\Users\hyang\bolt --id-label devcontainer.local_folder=c:\Users\hyang\bolt --id-label devcontainer.config_file=c:\Users\hyang\bolt\.devcontainer\devcontainer.json --container-id 97d8198853b4b7dd48d8928156811f6aeeee80db81158d22e227d700d671d083 --log-level debug --log-format json --config c:\Users\hyang\bolt\.devcontainer\devcontainer.json --default-user-env-probe loginInteractiveShell --skip-non-blocking-commands true --prebuild false --stop-for-personalization true --remote-env REMOTE_CONTAINERS_IPC=/tmp/vscode-remote-containers-ipc-b7daf94a-c808-4844-bc78-0922dbf87edb.sock --remote-env SSH_AUTH_SOCK=/tmp/vscode-ssh-auth-b7daf94a-c808-4844-bc78-0922dbf87edb.sock --remote-env REMOTE_CONTAINERS=true --mount-workspace-git-root true --terminal-columns 198 --terminal-rows 8 --dotfiles-target-path ~/dotfiles
+[2023-04-26T13:00:27.698Z] Exit code 1
