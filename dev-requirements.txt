@@ -16,6 +16,7 @@ fastapi
 pillow
 cryptography
 uvicorn
+mysql-connector-python
 
 pandas
 requests
