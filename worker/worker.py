@@ -1,4 +1,5 @@
 import asyncio
+import argparse
 import json
 import logging
 import os
@@ -12,7 +13,8 @@ from sqlalchemy import select
 
 
 from utils import (
-    summary_article,
+    summarize_article,
+    summarize_title,
     translate_article,
     translate_title,
     get_text_file_from_s3,
@@ -49,14 +51,14 @@ async def check_finish(job: WorkerJob) -> bool:
     )
 
 
-async def process_job(job: WorkerJob) -> None:
+async def process_job(job: WorkerJob, use_gpt4: bool) -> None:
     """根据SQS job的类型进行原文翻译/摘要生成/标题翻译的工作."""
     article_path = os.path.join(job.s3_prefix, "article.txt")
     target_lang = Language.get(job.target_lang).display_name()
     match job.job_type.lower():
-        case "summary_article":
+        case "summarize_article":
             content = await get_text_file_from_s3(article_path)
-            text = await summary_article(content, target_lang)
+            text = await summarize_article(content, target_lang, use_gpt4=use_gpt4)
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "summary.txt"
             )
@@ -67,9 +69,15 @@ async def process_job(job: WorkerJob) -> None:
             )
         case "translate_article":
             content = await get_text_file_from_s3(article_path)
-            text = await translate_article(content, job.target_lang)
+            text = await translate_article(content, job.target_lang, use_gpt4=use_gpt4)
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "article.txt"
+            )
+        case "summarize_title":
+            content = await get_text_file_from_s3(article_path)
+            text = await summarize_title(content, job.target_lang, use_gpt4=use_gpt4)
+            res_path = os.path.join(
+                job.s3_prefix, f"lang={job.target_lang}", "title.txt"
             )
         case _:
             raise ValueError(f"Not supported job type: {job.job_type}")
@@ -95,7 +103,7 @@ async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
     await engine.dispose()
 
 
-async def main() -> None:
+async def main(args: argparse.Namespace) -> None:
     session = get_session()
     async with session.create_client("sqs", region_name="us-west-2") as sqs:
         while True:
@@ -108,7 +116,7 @@ async def main() -> None:
                         json_dict = json.loads(message["Body"])
                         job = WorkerJob(**json_dict)
                         logging.info(f"process job: {job}")
-                        await process_job(job)
+                        await process_job(job, args.use_gpt4)
                         await sqs.delete_message(
                             QueueUrl=QUEUE_WORKER_URL,
                             ReceiptHandle=message["ReceiptHandle"],
@@ -130,5 +138,7 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--use-gpt4", type=bool, default=False)
     logging.basicConfig(level=logging.INFO)
-    asyncio.run(main())
+    asyncio.run(main(parser.parse_args()))

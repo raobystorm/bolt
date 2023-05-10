@@ -19,11 +19,10 @@ async def _call_openai(json_body: dict) -> str:
             return json_resp["choices"][0]["message"]["content"].strip()
 
 
-async def summary_article(text: str, lang: str) -> str:
+async def summarize_article(text: str, lang: str, use_gpt4: bool = False) -> str:
     body = {
         "model": "gpt-3.5-turbo",
         "temperature": 0,
-        "max_tokens": 600,
         "messages": [
             {
                 "role": "system",
@@ -39,14 +38,15 @@ async def summary_article(text: str, lang: str) -> str:
             },
         ],
     }
+    if use_gpt4:
+        body["model"] = "gpt-4"
     return await _call_openai(body)
 
 
-async def translate_article(text: str, lang: str) -> str:
+async def translate_article(text: str, lang: str, use_gpt4: bool = False) -> str:
     body = {
         "model": "gpt-3.5-turbo",
         "temperature": 0,
-        "max_tokens": 1500,
         "messages": [
             {
                 "role": "system",
@@ -62,14 +62,15 @@ async def translate_article(text: str, lang: str) -> str:
             },
         ],
     }
+    if use_gpt4:
+        body["model"] = "gpt-4"
     return await _call_openai(body)
 
 
-async def summary_title(text: str, lang: str):
+async def summarize_title(text: str, lang: str, use_gpt4: bool = False):
     body = {
         "model": "gpt-3.5-turbo",
         "temperature": 0,
-        "max_tokens": 300,
         "messages": [
             {
                 "role": "system",
@@ -77,14 +78,16 @@ async def summary_title(text: str, lang: str):
             },
             {
                 "role": "user",
-                "content": f"Summarize the news article into a title in {lang} below: {text}",
+                "content": f"Summarize the news article into a one-sentence title in {lang} below: {text}",
             },
             {
                 "role": "assistant",
-                "content": f"Summarize the article into a title of {lang}: ",
+                "content": f"Summarize the article into a one-sentence title of {lang}: ",
             },
         ],
     }
+    if use_gpt4:
+        body["model"] = "gpt-4"
     return await _call_openai(body)
 
 
@@ -92,7 +95,6 @@ async def translate_title(title: str, lang: str):
     body = {
         "model": "gpt-3.5-turbo",
         "temperature": 0,
-        "max_tokens": 500,
         "messages": [
             {
                 "role": "system",
