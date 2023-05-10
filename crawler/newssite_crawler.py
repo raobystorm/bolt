@@ -16,7 +16,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 #
-from db import get_db_engine
+from db import get_db_engine,article
 
 #告警关闭
 import warnings
@@ -40,8 +40,9 @@ def write_s3(media, title, content):
     # 把爬取的内容写成一个文件，文件名为新闻来源加时间戳，内容为新闻标题和新闻正文
     session = boto3.Session()
     s3 = session.resource("s3")
-    object = s3.Object("bolt-prod", write_dir + "/article.txt")
-    object.put(Body=title + "\n" + content)
+    title_key=title.replace(" ","_")
+    object = s3.Object("bolt-prod", write_dir + f"{title_key}/article.txt")
+    object.put(Body=content)
     return write_dir
 
 #函数功能：将新闻图片进行下载并上传至s3
@@ -58,9 +59,10 @@ def write_articleDB(media,df,s3_prefix):
         return
         
     engine = get_db_engine()
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         conn.execute(
             article.insert().values(
+                media_id=media_id,
                 title=df['title'][0], 
                 author=df['author'][0],
                 link_url=df['link_url'][0],
@@ -271,7 +273,7 @@ if __name__ == "__main__":
     # db写好之前直接使用crawler_info
     crawler_info = {
         "NewsWeek": {
-            "https://www.newsweek.com": ".img-pr",
+            #"https://www.newsweek.com": ".img-pr",
             "https://www.newsweek.com/world": ".row",
             "https://www.newsweek.com/tech-science": ".row",
             "https://www.newsweek.com/autos": ".row",
