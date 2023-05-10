@@ -18,7 +18,7 @@ def init_db_tables() -> None:
 
 def inser_test_data() -> None:
     engine = get_db_engine()
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         conn.execute(
             media.insert().values(
                 name="NewsWeek", base_url="https://www.newsweek.com/"
