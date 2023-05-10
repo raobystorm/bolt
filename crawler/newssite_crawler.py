@@ -16,7 +16,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 #
-from ..db.db import get_db_engine
+from db import get_db_engine
 
 #告警关闭
 import warnings
