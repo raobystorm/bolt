@@ -4,7 +4,7 @@ import datetime
 import threading
 import time
 
-#import boto3
+import boto3
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -12,11 +12,16 @@ from bs4 import BeautifulSoup
 # 全局配置，包含线程数，爬虫重试次数等
 threadmax = threading.BoundedSemaphore(3)
 requests.adapters.DEFAULT_RETRIES = 3
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+#
+from db import get_db_engine
+
 #告警关闭
 import warnings
 
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+
 
 warnings.filterwarnings("ignore")
 
@@ -33,12 +38,37 @@ def write_s3(media, title, content):
         f"Articles/media={media}/Year={year}/Month={month}/Day={day}/Hour={hour}/"
     )
     # 把爬取的内容写成一个文件，文件名为新闻来源加时间戳，内容为新闻标题和新闻正文
-    session = boto3.Session(profile_name="bolt")
+    session = boto3.Session()
     s3 = session.resource("s3")
     object = s3.Object("bolt-prod", write_dir + "/article.txt")
     object.put(Body=title + "\n" + content)
     return write_dir
 
+#函数功能：将新闻图片进行下载并上传至s3
+def download_image(image_path):
+    return
+
+#函数功能：将爬取到的信息写入article表
+def write_articleDB(media,df,s3_prefix):
+    if(media=="NewsWeek"):
+        media_id=1
+    elif(media=="nytimes"):
+        media_id=2
+    else:
+        return
+        
+    engine = get_db_engine()
+    with engine.connect() as conn:
+        conn.execute(
+            article.insert().values(
+                title=df['title'][0], 
+                author=df['author'][0],
+                link_url=df['link_url'][0],
+                s3_prefix=s3_prefix,
+                publish_date=df['publish_date'][0]
+            )
+        )
+    return
 
 # 函数功能：将爬取的信息写入消息队列
 def send_SQS(media_id, title, s3_prefix, job_type="summary", target_lang="zh-CN"):
@@ -207,12 +237,14 @@ class myThread(threading.Thread):
     def _run(self):
         threadmax.acquire()
         df=get_news_info(self.Media, self.site_url, self.selector_path, self.title_list)
-        #write_s3(self.Media, df["title"], df["content"])
+        s3_prefix=write_s3(self.Media, df["title"][0], df["content"][0])
+        download_image(df["image_path"])
+        write_articleDB(self.Media,df,s3_prefix)
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         f = open("成功url.txt", "a")
         f.write(now + " " + self.site_url + "\n")
         f.close()
-        print(self.Media, df["title"], df["content"])
+        print(self.Media, df["title"][0], df["content"][0])
         # send_SQS(self.Media, df["title"])
         threadmax.release()
 
