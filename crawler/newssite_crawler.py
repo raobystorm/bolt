@@ -17,7 +17,7 @@ from urllib3.util.retry import Retry
 
 #
 from db import get_db_engine,article
-
+from worker.worker import WorkerJob 
 #告警关闭
 import warnings
 
