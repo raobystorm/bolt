@@ -73,7 +73,17 @@ def write_articleDB(media,df,s3_prefix):
     return
 
 # 函数功能：将爬取的信息写入消息队列
-def send_SQS(media_id, title, s3_prefix, job_type="summary", target_lang="zh-CN"):
+def send_SQS(media_id, title, s3_prefix,  target_lang="zh-CN"):
+    sqs_client =boto3.client("sqs", region_name="us-west-2")
+    #需要发送3个消息，分别为"summarize_article", "summarize_title", "translate_article"
+    message={'media_id':media_id,'title':title,'s3_prefix':s3_prefix,job_type="summarize_article",target_lang=target_lang}
+    response = sqs_client.send_message(QueueUrl="https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod",MessageBody=json.dumps(message))
+    
+    message={'media_id':media_id,'title':title,'s3_prefix':s3_prefix,job_type="summarize_title",target_lang=target_lang}
+    response = sqs_client.send_message(QueueUrl="https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod",MessageBody=json.dumps(message))
+    
+    message={'media_id':media_id,'title':title,'s3_prefix':s3_prefix,job_type="translate_article",target_lang=target_lang}
+    response = sqs_client.send_message(QueueUrl="https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod",MessageBody=json.dumps(message))
     return
 
 
@@ -246,8 +256,8 @@ class myThread(threading.Thread):
         f = open("成功url.txt", "a")
         f.write(now + " " + self.site_url + "\n")
         f.close()
-        print(self.Media, df["title"][0], df["content"][0])
-        # send_SQS(self.Media, df["title"])
+        #print(self.Media, df["title"][0], df["content"][0])
+        send_SQS(self.Media, df["title"],s3_prefix)
         threadmax.release()
 
 
