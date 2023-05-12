@@ -251,22 +251,13 @@ class myThread(threading.Thread):
         df=get_news_info(self.Media, self.site_url, self.selector_path, self.title_list)
         s3_prefix=write_s3(self.Media, df["title"][0], df["content"][0])
         download_image(df["image_path"])
-<<<<<<< HEAD
         write_articleDB(self.Media, df, s3_prefix)
         # print(self.Media, df["title"][0], df["content"][0])
         send_SQS(self.Media, df["title"], s3_prefix)
-=======
-        write_articleDB(self.Media,df,s3_prefix)
->>>>>>> parent of 5c0d9f3 (clean crawler)
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         f = open("成功url.txt", "a")
         f.write(now + " " + self.site_url + "\n")
         f.close()
-<<<<<<< HEAD
-=======
-        #print(self.Media, df["title"][0], df["content"][0])
-        send_SQS(self.Media, df["title"],s3_prefix)
->>>>>>> parent of 5c0d9f3 (clean crawler)
         threadmax.release()
 
 
