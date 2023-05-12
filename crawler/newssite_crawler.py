@@ -260,12 +260,12 @@ class myThread(threading.Thread):
         s3_prefix = write_s3(self.Media, df["title"][0], df["content"][0])
         download_image(df["image_path"])
         write_articleDB(self.Media, df, s3_prefix)
+        # print(self.Media, df["title"][0], df["content"][0])
+        send_SQS(self.Media, df["title"], s3_prefix)
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         f = open("成功url.txt", "a")
         f.write(now + " " + self.site_url + "\n")
         f.close()
-        # print(self.Media, df["title"][0], df["content"][0])
-        # send_SQS(self.Media, df["title"],s3_prefix)
         threadmax.release()
 
 
