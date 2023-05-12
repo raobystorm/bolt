@@ -1,6 +1,5 @@
-# import newspaper
-# import newspaper
 import datetime
+import json
 import threading
 import time
 
@@ -9,25 +8,26 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from consts import QUEUE_WORKER_URL
+
+from db import get_db_engine, article, read_all_media
+from worker.worker import JobType, WorkerJob
+
+# 告警关闭
+import warnings
+
 # 全局配置，包含线程数，爬虫重试次数等
 threadmax = threading.BoundedSemaphore(3)
 requests.adapters.DEFAULT_RETRIES = 3
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-#
-from db import get_db_engine,article
-from worker.worker import WorkerJob 
-#告警关闭
-import warnings
-
 
 
 warnings.filterwarnings("ignore")
 
 
 # 函数功能：将爬取的信息写入aws的s3
-def write_s3(media, title, content):
+def write_s3(media: str, title: str, content: str) -> str:
     # 获取当前时间，用于创建日期目录
     now = datetime.datetime.now()
     year = now.strftime("%Y")
@@ -40,56 +40,63 @@ def write_s3(media, title, content):
     # 把爬取的内容写成一个文件，文件名为新闻来源加时间戳，内容为新闻标题和新闻正文
     session = boto3.Session()
     s3 = session.resource("s3")
-    title_key=title.replace(" ","_")
+    title_key = title.replace(" ", "_")
     object = s3.Object("bolt-prod", write_dir + f"{title_key}/article.txt")
     object.put(Body=content)
     return write_dir
 
-#函数功能：将新闻图片进行下载并上传至s3
-def download_image(image_path):
+
+# 函数功能：将新闻图片进行下载并上传至s3
+def download_image(image_path: str) -> None:
     return
 
-#函数功能：将爬取到的信息写入article表
-def write_articleDB(media,df,s3_prefix):
-    if(media=="NewsWeek"):
-        media_id=1
-    elif(media=="nytimes"):
-        media_id=2
-    else:
-        return
-        
+
+# 函数功能：将爬取到的信息写入article表
+def write_articleDB(media_id: int, df: pd.DataFrame, s3_prefix: str):
     engine = get_db_engine()
     with engine.begin() as conn:
         conn.execute(
             article.insert().values(
                 media_id=media_id,
-                title=df['title'][0], 
-                author=df['author'][0],
-                link_url=df['link_url'][0],
+                title=df["title"][0],
+                author=df["author"][0],
+                link_url=df["link_url"][0],
                 s3_prefix=s3_prefix,
-                publish_date=df['publish_date'][0]
+                publish_date=df["publish_date"][0],
             )
         )
-    return
+
 
 # 函数功能：将爬取的信息写入消息队列
-def send_SQS(media_id, title, s3_prefix,  target_lang="zh-CN"):
-    sqs_client =boto3.client("sqs", region_name="us-west-2")
-    #需要发送3个消息，分别为"summarize_article", "summarize_title", "translate_article"
-    message={'media_id':media_id,'title':title,'s3_prefix':s3_prefix,job_type="summarize_article",target_lang=target_lang}
-    response = sqs_client.send_message(QueueUrl="https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod",MessageBody=json.dumps(message))
-    
-    message={'media_id':media_id,'title':title,'s3_prefix':s3_prefix,job_type="summarize_title",target_lang=target_lang}
-    response = sqs_client.send_message(QueueUrl="https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod",MessageBody=json.dumps(message))
-    
-    message={'media_id':media_id,'title':title,'s3_prefix':s3_prefix,job_type="translate_article",target_lang=target_lang}
-    response = sqs_client.send_message(QueueUrl="https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod",MessageBody=json.dumps(message))
-    return
+def send_SQS(
+    media_id: int,
+    article_id: int,
+    title: str,
+    s3_prefix: str,
+    target_lang: str = "zh-CN",
+) -> None:
+    with boto3.client("sqs", region_name="us-west-2") as sqs:
+        # 需要发送3个消息，分别为"summarize_article", "summarize_title", "translate_article"
+        job = WorkerJob(
+            media_id=media_id,
+            article_id=article_id,
+            title=title,
+            s3_prefix=s3_prefix,
+            job_type=JobType.SUMMARIZE_ARTICLE,
+            target_lang=target_lang,
+        )
+        sqs.send_message(QueueUrl=QUEUE_WORKER_URL, MessageBody=json.dumps(job))
+
+        job.job_type = JobType.SUMMARIZE_TITLE
+        sqs.send_message(QueueUrl=QUEUE_WORKER_URL, MessageBody=json.dumps(job))
+
+        job.job_type = JobType.TRANSLATE_ARTICLE
+        sqs.send_message(QueueUrl=QUEUE_WORKER_URL, MessageBody=json.dumps(job))
 
 
 # 函数功能：实现httpRequest功能
 # 函数返回：返回html代码
-def httpRequest(url):
+def httpRequest(url: str):
     try:
         session = requests.Session()
         retry = Retry(connect=3, backoff_factor=0.5)
@@ -99,12 +106,12 @@ def httpRequest(url):
         response = session.get(url, headers=headers, verify=False, timeout=30)
         if response.status_code == 200:
             return response
-    except:
+    except Exception:
         return ""
 
 
 # 函数功能：爬取newsweek网站
-def crawl_newsweek(site_url, selector_path, title_list):
+def crawl_newsweek(site_url, selector_path, title_list) -> pd.DataFrame:
     response = httpRequest(site_url)
     if response == "":
         return
@@ -113,7 +120,7 @@ def crawl_newsweek(site_url, selector_path, title_list):
     ele = bs.select(selector_path)[0]
     # print(ele)
     # 获取link_url
-    link_url = "https://www.newsweek.com/" + ele.select("a")[0].attrs["href"]
+    link_url = site_url + ele.select("a")[0].attrs["href"]
     # 获取text_path（指写入s3路径）
     text_path = ""
     response = httpRequest(link_url)
@@ -123,7 +130,7 @@ def crawl_newsweek(site_url, selector_path, title_list):
     bs = BeautifulSoup(html, "html.parser")
 
     # 获取title并查重
-    title = bs.select("[class*=title]")[0].text
+    title = bs.select(title_selector)[0].text
     # 进行title查重，查找title列表里是否有该标题，如果没有再进行抓取
     if title not in title_list:
         title_list.append(title)
@@ -132,16 +139,16 @@ def crawl_newsweek(site_url, selector_path, title_list):
     # 获取publish_date
     publish_date = bs.select("time")[0].attrs["datetime"]
     # 获取author
-    author = bs.select(".author")[0].text
+    author = bs.select(author_selector)[0].text
     # 获取image_path
-    image_path = bs.select(".article-body img")[0].attrs["src"]
+    image_path = bs.select(image_selector)[0].attrs["src"]
     # 获取content
     # write_dir = write_dir + title.replace(" ", "_")
     # 新闻周刊正文分布在多个段落P中，需要获取每一个段落的文字
     content = ""
-    length = len(bs.select(".article-body")[0].find_all("p"))
+    length = len(bs.select(text_selector)[0].find_all("p"))
     for i in range(0, length):
-        content += bs.select(".article-body")[0].find_all("p")[i].text
+        content += bs.select(text_selector)[0].find_all("p")[i].text
     df = pd.DataFrame(
         {
             "title": [title],
@@ -161,7 +168,7 @@ def crawl_times(site_url, selector_path, title_list):
 
 
 # 函数功能：爬取nytimes网站
-def crawl_nytimes(site_url, selector_path, title_list):
+def crawl_nytimes(site_url: str, selector_path: str, title_list):
     response = httpRequest(site_url)
     if response == "":
         return
@@ -170,8 +177,6 @@ def crawl_nytimes(site_url, selector_path, title_list):
     ele = bs.select(selector_path)[0]
     # 获取link_url
     link_url = ele.select("a")[0].attrs["href"]
-    if link_url.__contains__("http") is False:
-        link_url = "https://www.nytimes.com" + link_url
     # 获取text_path（指写入s3路径）
     text_path = ""
     # 获取title并查重
@@ -180,7 +185,8 @@ def crawl_nytimes(site_url, selector_path, title_list):
         return
     html = response.text
     bs = BeautifulSoup(html, "html.parser")
-    title = bs.select("[id*=link-]")[0].text
+
+    title = bs.select(title)[0].text
     # 进行title查重，查找title列表里是否有该标题，如果没有再进行抓取
     if title not in title_list:
         title_list.append(title)
@@ -226,7 +232,7 @@ def get_news_info(media, site_url, selector_path, title_list):
 
 
 class myThread(threading.Thread):
-    def __init__(self, Media, site_url, selector_path, title_list):
+    def __init__(self, *, Media, site_url, selector_path, title_list):
         threading.Thread.__init__(self)
         self.Media = Media
         self.site_url = site_url
@@ -242,33 +248,33 @@ class myThread(threading.Thread):
             threadmax.release()
             f = open("异常url.txt", "a")
             now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-            f.write(now + " " + self.site_url + "出现异常"+"异常提示："+str(e)+"\n")
+            f.write(now + " " + self.site_url + "出现异常" + "异常提示：" + str(e) + "\n")
             f.close()
             raise Exception(str(self.site_url) + "出现异常")
 
     def _run(self):
         threadmax.acquire()
-        df=get_news_info(self.Media, self.site_url, self.selector_path, self.title_list)
-        s3_prefix=write_s3(self.Media, df["title"][0], df["content"][0])
+        df = get_news_info(
+            self.Media, self.site_url, self.selector_path, self.title_list
+        )
+        s3_prefix = write_s3(self.Media, df["title"][0], df["content"][0])
         download_image(df["image_path"])
-        write_articleDB(self.Media,df,s3_prefix)
+        write_articleDB(self.Media, df, s3_prefix)
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         f = open("成功url.txt", "a")
         f.write(now + " " + self.site_url + "\n")
         f.close()
-        #print(self.Media, df["title"][0], df["content"][0])
-        send_SQS(self.Media, df["title"],s3_prefix)
+        # print(self.Media, df["title"][0], df["content"][0])
+        # send_SQS(self.Media, df["title"],s3_prefix)
         threadmax.release()
 
 
-proxies = {
-    "http": "127.0.0.1:7890",
-    "https": "127.0.0.1:7890"
-}
+proxies = {"http": "127.0.0.1:7890", "https": "127.0.0.1:7890"}
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
 }
+
 
 if __name__ == "__main__":
     # 记录已经获取的所有渠道的新闻标题，每个月情空一次
@@ -281,9 +287,10 @@ if __name__ == "__main__":
     # media_list = ["NewsWeek"]
     # 以下代码查询db中每一个media的site_url和selector_path，查询结果crawler_info形式如{media1:{url1:selector_path1,url2:selector_path2……},url2:{url3:selector_path3,url4:selector_path4……}}
     # db写好之前直接使用crawler_info
+    media_list = read_all_media()
     crawler_info = {
         "NewsWeek": {
-            #"https://www.newsweek.com": ".img-pr",
+            # "https://www.newsweek.com": ".img-pr",
             "https://www.newsweek.com/world": ".row",
             "https://www.newsweek.com/tech-science": ".row",
             "https://www.newsweek.com/autos": ".row",
@@ -298,27 +305,30 @@ if __name__ == "__main__":
     thread_list = []
     df = pd.DataFrame()
     # print(crawler_info_new[0][0])
-    while(True):
-        for media in crawler_info.keys():
-            for site_url in crawler_info[media].keys():
-                # 以下为单线程版本
-                # df = pd.concat(
-                #     [
-                #         df,
-                #         get_news_info(
-                #             media, site_url, crawler_info[media][site_url], title_list
-                #         ),
-                #     ]
-                # )
-                # 以下5行为多线程版本
-                thread = myThread(
-                    media, site_url, crawler_info[media][site_url], title_list
-                )
-                thread.start()
-                thread_list.append(thread)
+    while True:
+        for media_info in media_list:
+            (
+                media_id,
+                media_name,
+                base_url,
+                rss_url,
+                text_selector,
+                title_selector,
+                author_selector,
+            ) = media_info
+            thread = myThread(
+                media_id,
+                base_url,
+                text_selector,
+                title_selector,
+                author_selector,
+                title_list,
+            )
+            thread.start()
+            thread_list.append(thread)
 
         for t in thread_list:
             t.join()
-            
-        #每半小时爬取一次
+
+        # 每半小时爬取一次
         time.sleep(500)
