@@ -1,33 +1,19 @@
-<script setup lang="ts">
-import { RouterView } from 'vue-router'
-// import '@/scss/styles.scss'
-// import * as bootstrap from 'bootstrap'
-
-</script>
-
 <template>
-  <div class="background">
-    <div class="timeline">
-      <RouterView name="LeftView" />
-    </div>
-    <div class="article">
-      <RouterView name="RightView" />
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-6">
+        <RouterView name="List" />
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.background {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-}
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
+import '@/scss/styles.scss'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
-.timeline {
-  width: 20%;
-}
+</script>
 
-.article {
-  width: 80%;
-}
-</style>
+
+<style scoped></style>

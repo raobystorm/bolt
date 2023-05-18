@@ -1,13 +1,11 @@
 <template>
   <div class="Timeline">
-    <h1>This is a Timeline page</h1>
+    <h1>Timeline</h1>
     <ul>
       <div v-for="item in items" :key="item.title" class="card mb-3">
-        <li>
+        <div class="row">
           <img v-bind:src="item.thumbnail_path" width="80" height="80" class="TimelineItemImage">
-          <div>{{ item.title }}</div>
-          <div>{{ item.media }}</div>
-        </li>
+        </div>
       </div>
     </ul>
     <VueEternalLoading :load="load" />
@@ -19,6 +17,7 @@
   font-size: large;
 }
 </style>
+
 <script lang="ts" setup>
 import { VueEternalLoading, type LoadAction } from "@ts-pro/vue-eternal-loading";
 import { ref } from 'vue';

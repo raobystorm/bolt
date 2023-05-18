@@ -11,7 +11,8 @@
 				"ms-python.vscode-pylance",
 				"yzhang.markdown-all-in-one",
 				"njpwerner.autodocstring",
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"ms-python.isort"
 			],
 			"settings": {
 				"[python]": {

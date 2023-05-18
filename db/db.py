@@ -43,6 +43,7 @@ media = Table(
     Column("rss_url", String(512), nullable=True),
     Column("text_selector", String(255), nullable=True),
     Column("title_selector", String(255), nullable=True),
+    Column("author_selector", String(255), nullable=True),
     Column("created_at", DateTime, default=func.now()),
     Column("updated_at", DateTime, default=func.now(), onupdate=func.now()),
 )

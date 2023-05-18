@@ -31,7 +31,9 @@ async def fetch_articles(user_id: int, page: int, lang: str) -> dict:
     async with engine.connect() as conn:
         offset = PAGE_LIMIT * page
         stmt = (
-            select(article.c.s3_prefix, article.c.publish_date, media.c.name)
+            select(
+                article.c.id, article.c.s3_prefix, article.c.publish_date, media.c.name
+            )
             .join(user_article, article.c.id == user_article.c.article_id)
             .join(media, article.c.media_id == media.c.id)
             .filter(user_article.c.user_id == user_id)
@@ -42,13 +44,14 @@ async def fetch_articles(user_id: int, page: int, lang: str) -> dict:
         articles = await conn.execute(stmt)
 
     results: dict[str, list] = {}
-    for s3_prefix, publish_date, media_name in articles:
+    for id, s3_prefix, publish_date, media_name in articles:
         d = datetime.strftime(publish_date, "%Y-%m-%d")
         title = await get_text_file_from_s3(s3_prefix + f"/lang={lang}/title.txt")
         if d not in results:
             results[d] = []
         results[d].append(
             {
+                "article_id": id,
                 "title": title,
                 "thumbnail_path": THUMBNAIL_PREFIX + s3_prefix + "/thumbnail.webp",
                 "media": media_name,

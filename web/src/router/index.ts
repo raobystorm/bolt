@@ -9,8 +9,7 @@ const router = createRouter({
       path: "/",
       name: 'home',
       components: {
-        LeftView: Timeline,
-        RightView: Article,
+        List: Timeline,
       }
     }
   ]

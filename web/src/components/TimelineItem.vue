@@ -8,6 +8,7 @@
 export default {
   name: "TimelineItem",
   props: {
+    articleId: Number,
     title: String,
     media: String,
     thumbnailUrl: String,

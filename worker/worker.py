@@ -1,5 +1,6 @@
 import asyncio
 import argparse
+from enum import StrEnum
 import json
 import logging
 import os
@@ -23,13 +24,20 @@ from utils import (
 )
 
 
+class JobType(StrEnum):
+    SUMMARIZE_ARTICLE = "summarize_article"
+    TRANSLATE_TITLE = "translate_title"
+    TRANSLATE_ARTICLE = "translate_article"
+    SUMMARIZE_TITLE = "summarize_title"
+
+
 @dataclass
 class WorkerJob:
     media_id: int
     article_id: int
     title: str
     s3_prefix: str
-    job_type: str = "summary_article"
+    job_type: JobType = JobType.SUMMARIZE_ARTICLE
     target_lang: str = "zh-CN"
 
 
@@ -55,25 +63,25 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> None:
     """根据SQS job的类型进行原文翻译/摘要生成/标题翻译的工作."""
     article_path = os.path.join(job.s3_prefix, "article.txt")
     target_lang = Language.get(job.target_lang).display_name()
-    match job.job_type.lower():
-        case "summarize_article":
+    match job.job_type:
+        case JobType.SUMMARIZE_ARTICLE:
             content = await get_text_file_from_s3(article_path)
             text = await summarize_article(content, target_lang, use_gpt4=use_gpt4)
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "summary.txt"
             )
-        case "translate_title":
+        case JobType.TRANSLATE_TITLE:
             text = await translate_title(title=job.title, lang=job.target_lang)
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "title.txt"
             )
-        case "translate_article":
+        case JobType.TRANSLATE_ARTICLE:
             content = await get_text_file_from_s3(article_path)
             text = await translate_article(content, job.target_lang, use_gpt4=use_gpt4)
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "article.txt"
             )
-        case "summarize_title":
+        case JobType.SUMMARIZE_TITLE:
             content = await get_text_file_from_s3(article_path)
             text = await summarize_title(content, job.target_lang, use_gpt4=use_gpt4)
             res_path = os.path.join(
