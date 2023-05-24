@@ -18,9 +18,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from sqlalchemy.orm import sessionmaker
 from urllib3.util.retry import Retry
 
-from db import Media
+from db import Media, get_db_engine
 
 warnings.filterwarnings("ignore")
 
@@ -127,7 +128,7 @@ def get_news_links(rss_urls):
 # 函数功能：使用request爬取网站
 # 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
 # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
-def crawl_news_Request(site_url, path="xpath"):
+def crawl_news_Request(site_url, session, path="xpath"):
     # 获取text_path（指写入s3路径）
     text_path = ""
     # 获取title并查重
@@ -137,7 +138,7 @@ def crawl_news_Request(site_url, path="xpath"):
     html = response.text
     # 获取xpath
     if path == "xpath":
-        xpaths = get_xpaths(site_url)
+        xpaths = get_xpaths(site_url, session)
         html = etree.HTML(html)
         # title、content为必须
         title = html.xpath(xpaths[0])[0].text
@@ -151,7 +152,7 @@ def crawl_news_Request(site_url, path="xpath"):
             image_path = html.xpath(xpaths[3])[0]
     # 获取css_selector
     if path == "css_selector":
-        css_selectors = get_css_selectors(site_url)
+        css_selectors = get_css_selectors(site_url, session)
         bs = BeautifulSoup(html, "html.parser")
 
         # title、content为必须
@@ -190,7 +191,7 @@ def crawl_news_Request(site_url, path="xpath"):
 # 函数功能：使用selenium爬取网站
 # 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
 # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
-def crawl_news_Selenium(site_url, path="xpath"):
+def crawl_news_Selenium(site_url, session, path="xpath"):
     chrome_options = Options()
     chrome_options.add_argument("--disable-javascript")
     driver = webdriver.Chrome(chrome_options=chrome_options)
@@ -199,7 +200,7 @@ def crawl_news_Selenium(site_url, path="xpath"):
     text_path = ""
     wait = WebDriverWait(driver, timeout=10)
     if path == "xpath":
-        xpaths = get_xpaths(site_url)
+        xpaths = get_xpaths(site_url, session)
         # title、content为必须
         try:
             title = wait.until(
@@ -224,7 +225,7 @@ def crawl_news_Selenium(site_url, path="xpath"):
         except:
             pass
     if path == "css_selector":
-        css_selectors = get_css_selectors(site_url)
+        css_selectors = get_css_selectors(site_url, session)
         # title、content为必须
         try:
             title = wait.until(
@@ -267,6 +268,8 @@ class myThread(threading.Thread):
         threading.Thread.__init__(self)
         self.site_url = site_url
         self.exit_code = 0
+        engine = get_db_engine()
+        self.session = sessionmaker(bind=engine)()
 
     def run(self):
         try:
@@ -283,7 +286,7 @@ class myThread(threading.Thread):
     def _run(self):
         threadmax.acquire()
         # 用于写入数据库的df
-        df = crawl_news_Request(self.site_url)
+        df = crawl_news_Request(self.site_url, self.session)
         # 成功爬取后更新对应的site_url的content为1，表示该url已经获取了内容
         rows = df_result.site_url == self.site_url
         df_result.loc[rows, "title"] = df["title"][0]
