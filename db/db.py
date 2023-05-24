@@ -1,20 +1,19 @@
 import os
 
 from sqlalchemy import (
-    DateTime,
+    BigInteger,
     Column,
-    ForeignKeyConstraint,
+    DateTime,
+    ForeignKey,
     Index,
     String,
     create_engine,
+    func,
 )
-from sqlalchemy import MetaData
-from sqlalchemy import BigInteger
-from sqlalchemy import Table
-from sqlalchemy import func
 from sqlalchemy.engine import Engine
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
-
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 DB_HOST = os.environ["DB_HOST"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
@@ -22,84 +21,109 @@ DB_URL_ASYNC = f"mysql+aiomysql://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db"
 DB_URL = f"mysql+mysqlconnector://admin:{DB_PASSWORD}@{DB_HOST}/bolt_db"
 BOLT_DB = "bolt_db"
 
-meta_data = MetaData()
 
-user = Table(
-    "user",
-    meta_data,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
-    Column("lang", String(255), nullable=False),
-    Column("email", String(255), nullable=False),
-    Column("created_at", DateTime, default=func.now()),
-    Column("updated_at", DateTime, default=func.now(), onupdate=func.now()),
-)
+Base = declarative_base()
 
-media = Table(
-    "media",
-    meta_data,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
-    Column("name", String(255), nullable=False),
-    Column("base_url", String(512), nullable=False),
-    Column("rss_url", String(512), nullable=True),
-    Column("text_selector", String(255), nullable=True),
-    Column("title_selector", String(255), nullable=True),
-    Column("author_selector", String(255), nullable=True),
-    Column("created_at", DateTime, default=func.now()),
-    Column("updated_at", DateTime, default=func.now(), onupdate=func.now()),
-)
 
-article = Table(
-    "article",
-    meta_data,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
-    Column("media_id", BigInteger, nullable=False),
-    Column("category_id", BigInteger, nullable=True),
-    Column("title", String(512), nullable=False),
-    Column("author", String(255), nullable=True),
-    Column("link_url", String(1024), nullable=False),
-    Column("s3_prefix", String(1024), nullable=False),
-    Column("publish_date", DateTime, default=func.now()),
-    ForeignKeyConstraint(["media_id"], ["media.id"], ondelete="CASCADE"),
-    ForeignKeyConstraint(["category_id"], ["category.id"], ondelete="CASCADE"),
-    Column("created_at", DateTime, default=func.now()),
-    Column("updated_at", DateTime, default=func.now(), onupdate=func.now()),
-)
+class User(Base):
+    __tablename__ = "user"
 
-category = Table(
-    "category",
-    meta_data,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
-    Column("name", String(255), nullable=False),
-    Column("created_at", DateTime, default=func.now()),
-    Column("updated_at", DateTime, default=func.now(), onupdate=func.now()),
-)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    lang = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
-user_media = Table(
-    "user_media",
-    meta_data,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
-    Column("user_id", BigInteger, nullable=False),
-    Column("media_id", BigInteger, nullable=False),
-    Column("lang", String(255), nullable=False),
-    Column("created_at", DateTime, default=func.now()),
-    Column("updated_at", DateTime, default=func.now(), onupdate=func.now()),
-    ForeignKeyConstraint(["user_id"], ["user.id"], ondelete="CASCADE"),
-    ForeignKeyConstraint(["media_id"], ["media.id"], ondelete="CASCADE"),
-    Index("user_media_index", "media_id", "lang", unique=True),
-)
 
-user_article = Table(
-    "user_article",
-    meta_data,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
-    Column("user_id", BigInteger, nullable=False),
-    Column("article_id", BigInteger, nullable=False),
-    Column("created_at", DateTime, default=func.now()),
-    Column("updated_at", DateTime, default=func.now(), onupdate=func.now()),
-    ForeignKeyConstraint(["user_id"], ["user.id"], ondelete="CASCADE"),
-    ForeignKeyConstraint(["article_id"], ["article.id"], ondelete="CASCADE"),
-    Index("user_article_index", "user_id", unique=True),
-)
+class Media(Base):
+    __tablename__ = "media"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False)
+    base_url = Column(String(512), nullable=False)
+    rss_url = Column(String(512), nullable=True)
+    xpath_title = Column(String(1024), nullable=False)
+    xpath_publish_date = Column(String(1024), nullable=True)
+    xpath_author = Column(String(1024), nullable=True)
+    xpath_image_url = Column(String(1024), nullable=False)
+    xpath_content = Column(String(1024), nullable=False)
+    selector_title = Column(String(1024), nullable=False)
+    selector_publish_date = Column(String(1024), nullable=True)
+    selector_author = Column(String(1024), nullable=True)
+    selector_image_url = Column(String(1024), nullable=True)
+    selector_content = Column(String(1024), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+class Article(Base):
+    __tablename__ = "article"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    media_id = Column(
+        BigInteger, ForeignKey("media.id", ondelete="CASCADE"), nullable=False
+    )
+    category_id = Column(
+        BigInteger, ForeignKey("category.id", ondelete="CASCADE"), nullable=True
+    )
+    title = Column(String(512), nullable=False)
+    author = Column(String(255), nullable=True)
+    link_url = Column(String(1024), nullable=False)
+    s3_prefix = Column(String(1024), nullable=False)
+    publish_date = Column(DateTime, default=func.now())
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    # Relationship definition
+    media = relationship("Media", backref="articles")
+
+
+class Category(Base):
+    __tablename__ = "category"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+class UserMedia(Base):
+    __tablename__ = "user_media"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(
+        BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+    )
+    media_id = Column(
+        BigInteger, ForeignKey("media.id", ondelete="CASCADE"), nullable=False
+    )
+    lang = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    user = relationship("User", backref="user_medias")
+    media = relationship("Media", backref="user_medias")
+
+    user_media_index = Index("user_media_index", media_id, lang, unique=True)
+
+
+class UserArticle(Base):
+    __tablename__ = "user_article"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(
+        BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+    )
+    article_id = Column(
+        BigInteger, ForeignKey("article.id", ondelete="CASCADE"), nullable=False
+    )
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    user = relationship("User", backref="user_articles")
+    article = relationship("Article", backref="user_articles")
+
+    user_article_index = Index("user_article_index", user_id, unique=True)
 
 
 def get_db_engine_async() -> AsyncEngine:

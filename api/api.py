@@ -1,12 +1,12 @@
+import logging
+from datetime import datetime
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-
 from sqlalchemy import select
-from db import article, user_article, media, get_db_engine_async
+
+from db import article, get_db_engine_async, media, user_article
 from worker.utils.s3 import get_text_file_from_s3
-from datetime import datetime
-import logging
 
 PAGE_LIMIT = 10
 THUMBNAIL_PREFIX = "https://bolt-prod-public.s3.us-west-2.amazonaws.com/"
@@ -14,7 +14,7 @@ THUMBNAIL_PREFIX = "https://bolt-prod-public.s3.us-west-2.amazonaws.com/"
 app = FastAPI()
 logger = logging.getLogger("uvicorn.error")
 
-origins = ["http://127.0.0.1:8080"]
+origins = ["http://localhost:8080"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,9 +51,9 @@ async def fetch_articles(user_id: int, page: int, lang: str) -> dict:
             results[d] = []
         results[d].append(
             {
-                "article_id": id,
+                "articleId": id,
                 "title": title,
-                "thumbnail_path": THUMBNAIL_PREFIX + s3_prefix + "/thumbnail.webp",
+                "thumbnailPath": THUMBNAIL_PREFIX + s3_prefix + "/thumbnail.webp",
                 "media": media_name,
             }
         )

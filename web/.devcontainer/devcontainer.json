@@ -10,9 +10,7 @@
 				"xabikos.JavaScriptSnippets",
 				"mgmcdermott.vscode-language-babel",
 				"ms-vscode.vscode-typescript-next",
-				"waderyan.nodejs-extension-pack",
-				"Vue.volar",
-				"Vue.vscode-typescript-vue-plugin"
+				"waderyan.nodejs-extension-pack"
 			]
 		}
 	},

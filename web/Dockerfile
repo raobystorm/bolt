@@ -6,4 +6,4 @@ RUN npm init -y && \
 
 COPY . /app
 
-EXPOSE 8000
+EXPOSE 8080
