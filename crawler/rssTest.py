@@ -1,11 +1,8 @@
-# import newspaper
-# import newspaper
-import datetime
 import random
 import threading
-
 # 告警关闭
 import warnings
+from datetime import datetime
 from urllib.parse import urlparse
 
 import pandas as pd
@@ -21,7 +18,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from sqlalchemy.orm import sessionmaker
 from urllib3.util.retry import Retry
 
-from db import Media, get_db_engine
+from db import Article, Media, get_db_engine
 
 warnings.filterwarnings("ignore")
 
@@ -67,7 +64,7 @@ def httpRequest(url):
         # response = session.get(url, headers=headers,proxies=proxies, verify=False, timeout=30)
         headers = {"User-Agent": random.choice(user_agent_list)}
         session.headers.update({"User-Agent": headers["User-Agent"]})
-        response = session.get(url, headers=headers, proxies=proxies, timeout=30)
+        response = session.get(url, headers=headers, timeout=30)
         # print(session.headers['user-agent'])
         if response.status_code == 200:
             return response
@@ -75,37 +72,10 @@ def httpRequest(url):
         return ""
 
 
-# 函数功能：获取媒体的xpath列表
-def get_xpaths(url, session):
-    host = urlparse(url)[1]
-    media = session.query(Media).filter(Media.name == host).first()
-    return (
-        media.xpath_title,
-        media.xpath_publish_date,
-        media.xpath_author,
-        media.xpath_image_url,
-        media.xpath_content,
-    )
-
-
-# 函数功能：获取媒体的css_selector列表
-def get_css_selectors(url, session):
-    host = urlparse(url)[1]
-    # 应从数据库获取，分别对应title、date、author、imagepath、content,测试代码直接填写
-    media = session.query(Media).filter(Media.name == host).first()
-    return (
-        media.selector_title,
-        media.selector_publish_date,
-        media.selector_author,
-        media.selector_image_url,
-        media.selector_content,
-    )
-
-
 # 函数功能：实现解析rss并返回新闻链接
 # 参数：rss_urls：rss源列表
 # 函数返回：新闻http链接列表
-def get_news_links(rss_urls):
+def get_news_links(rss_urls: list[str]):
     news_links = []
     if type(news_links) != list:
         return
@@ -125,151 +95,15 @@ def get_news_links(rss_urls):
     return news_links
 
 
-# 函数功能：使用request爬取网站
-# 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
-# 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
-def crawl_news_Request(site_url, session, path="xpath"):
-    # 获取text_path（指写入s3路径）
-    text_path = ""
-    # 获取title并查重
-    response = httpRequest(site_url)
-    if response == "":
-        return
-    html = response.text
-    # 获取xpath
-    if path == "xpath":
-        xpaths = get_xpaths(site_url, session)
-        html = etree.HTML(html)
-        # title、content为必须
-        title = html.xpath(xpaths[0])[0].text
-        content = html.xpath(xpaths[4])[0].xpath("string(.)")
-        publish_date = author = image_path = ""
-        if len(html.xpath(xpaths[1])) > 0:
-            publish_date = html.xpath(xpaths[1])[0].text
-        if len(html.xpath(xpaths[2])) > 0:
-            author = html.xpath(xpaths[2])[0].text
-        if len(html.xpath(xpaths[3])) > 0:
-            image_path = html.xpath(xpaths[3])[0]
-    # 获取css_selector
-    if path == "css_selector":
-        css_selectors = get_css_selectors(site_url, session)
-        bs = BeautifulSoup(html, "html.parser")
-
-        # title、content为必须
-        title = bs.select(css_selectors[0])[0].text
-        # 正文分布在多个段落P中，需要获取每一个段落的文字
-        content = ""
-        length = len(bs.select(css_selectors[4]))
-        for i in range(0, length):
-            content += bs.select(css_selectors[4])[i].text
-        publish_date = author = image_path = ""
-        # 获取publish_date
-        if len(bs.select(css_selectors[1])) > 0:
-            publish_date = bs.select(css_selectors[1])[0].text
-        # 获取author
-        if len(bs.select(css_selectors[2])) > 0:
-            author = bs.select(css_selectors[2])[0].text
-        # 获取image_path
-        image_path = ""
-        if len(bs.select(css_selectors[3])) > 0:
-            image_path = bs.select(css_selectors[3])[0].attrs["src"]
-        # write_dir = write_dir + title.replace(" ", "_")
-    df = pd.DataFrame(
-        {
-            "title": [title],
-            "content": [content],
-            "link_url": [site_url],
-            "text_path": [text_path],
-            "publish_date": [publish_date],
-            "author": [author],
-            "image_path": [image_path],
-        }
-    )
-    return df
-
-
-# 函数功能：使用selenium爬取网站
-# 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
-# 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
-def crawl_news_Selenium(site_url, session, path="xpath"):
-    chrome_options = Options()
-    chrome_options.add_argument("--disable-javascript")
-    driver = webdriver.Chrome(chrome_options=chrome_options)
-    driver.get(site_url)
-    # 获取text_path（指写入s3路径）
-    text_path = ""
-    wait = WebDriverWait(driver, timeout=10)
-    if path == "xpath":
-        xpaths = get_xpaths(site_url, session)
-        # title、content为必须
-        try:
-            title = wait.until(
-                EC.presence_of_element_located((By.XPATH, xpaths[0]))
-            ).text
-            content = wait.until(
-                EC.presence_of_element_located((By.XPATH, xpaths[4]))
-            ).text
-        except:
-            return
-        publish_date = author = image_path = ""
-        try:
-            image_path = wait.until(
-                EC.presence_of_element_located((By.XPATH, xpaths[3]))
-            ).get_attribute("src")
-            publish_date = wait.until(
-                EC.presence_of_element_located((By.XPATH, xpaths[1]))
-            ).text
-            author = wait.until(
-                EC.presence_of_element_located((By.XPATH, xpaths[2]))
-            ).text
-        except:
-            pass
-    if path == "css_selector":
-        css_selectors = get_css_selectors(site_url, session)
-        # title、content为必须
-        try:
-            title = wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, css_selectors[0]))
-            ).text
-            content = wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, css_selectors[4]))
-            ).text
-        except:
-            return
-        publish_date = author = image_path = ""
-        try:
-            image_path = wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, css_selectors[3]))
-            ).get_attribute("src")
-            publish_date = wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, css_selectors[1]))
-            ).text
-            author = wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, css_selectors[2]))
-            ).text
-        except:
-            pass
-    df = pd.DataFrame(
-        {
-            "title": [title],
-            "content": [content],
-            "link_url": [site_url],
-            "text_path": [text_path],
-            "publish_date": [publish_date],
-            "author": [author],
-            "image_path": [image_path],
-        }
-    )
-    return df
-
-
 class myThread(threading.Thread):
     def __init__(self, site_url):
         threading.Thread.__init__(self)
-        self.site_url = site_url
-        self.exit_code = 0
         engine = get_db_engine()
         self.session = sessionmaker(bind=engine)()
+        self.site_url = site_url
+        host = urlparse(site_url)[1]
+        self.media = self.session.query(Media).filter(Media.name == host).first()
+        self.exit_code = 0
 
     def run(self):
         try:
@@ -277,37 +111,202 @@ class myThread(threading.Thread):
         except Exception:
             self.exit_code = 1
             threadmax.release()
-            f = open("异常url.txt", "a")
-            datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-            f.write(self.site_url + "\n")
-            f.close()
+            with open("异常url.txt", "a") as f:
+                datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+                f.write(self.site_url + "\n")
             # raise Exception(str(self.site_url) + "出现异常")
+        finally:
+            self.session.commit()
+            self.session.close()
 
     def _run(self):
         threadmax.acquire()
         # 用于写入数据库的df
-        df = crawl_news_Request(self.site_url, self.session)
+        df = self.crawl_news_Request(path="xpath")
+        content_len = sum(map(len, df["content"]))
+        if content_len == 0:
+            df = self.crawl_news_Request(path="css_selector")
+            content_len = sum(map(len, df["content"]))
+        if content_len == 0:
+            df = self.crawl_news_Selenium(path="xpath")
+            content_len = sum(map(len, df["content"]))
+        if content_len == 0:
+            df = self.crawl_news_Selenium(path="css_selector")
         # 成功爬取后更新对应的site_url的content为1，表示该url已经获取了内容
         rows = df_result.site_url == self.site_url
         df_result.loc[rows, "title"] = df["title"][0]
         df_result.loc[rows, "content"] = df["content"][0]
+        # TODO: 完善DB部分和S3，SQS
+        s3_prefix = f"Articles/media={self.media.name}/Year={year}/Month={month}/Day={day}/Hour={hour}/"
+        article = Article(
+            media_id=self.media.id,
+            title=df["title"],
+            author=df["author"],
+            link_url=df["link_url"],
+            s3_prefix=s3_prefix,
+        )
+        self.session.add(article)
         # write_s3(self.Media, df["title"], df["content"])
-        datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        f = open("成功url.txt", "a")
-        f.write(self.site_url + "\n")
-        f.close()
+        datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        with open("成功url.txt", "a") as f:
+            f.write(self.site_url + "\n")
         # print(df["title"], df["content"])
         # send_SQS(self.Media, df["title"])
+        self.session.commit()
         threadmax.release()
+
+    # 函数功能：使用request爬取网站
+    # 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
+    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
+    def crawl_news_Request(self, path="xpath"):
+        # 获取text_path（指写入s3路径）
+        text_path = ""
+        # 获取title并查重
+        response = httpRequest(self.site_url)
+        if response == "":
+            return
+        html = response.text
+        # 获取xpath
+        if path == "xpath":
+            html = etree.HTML(html)
+            # title、content为必须
+            title = html.xpath(self.media.xpath_title)[0].text
+            content = html.xpath(self.media.xpath_content)[0].xpath("string(.)")
+            publish_date = author = image_path = ""
+            if len(html.xpath(self.media.xpath_publish_date)) > 0:
+                publish_date = html.xpath(self.media.xpath_publish_date)[0].text
+            if len(html.xpath(self.media.xpath_author)) > 0:
+                author = html.xpath(self.media.xpath_author)[0].text
+            if len(html.xpath(self.media.xpath_image_url)) > 0:
+                image_path = html.xpath(self.media.xpath_image_url)[0]
+        # 获取css_selector
+        if path == "css_selector":
+            bs = BeautifulSoup(html, "html.parser")
+            # title、content为必须
+            title = bs.select(self.media.selector_title)[0].text
+            # 正文分布在多个段落P中，需要获取每一个段落的文字
+            content = ""
+            length = len(bs.select(self.media.selector_content))
+            for i in range(0, length):
+                content += bs.select(self.media.selector_content)[i].text
+            publish_date = author = image_path = ""
+            # 获取publish_date
+            if len(bs.select(self.media.selector_publish_date)) > 0:
+                publish_date = bs.select(self.media.selector_publish_date)[0].text
+            # 获取author
+            if len(bs.select(self.media.selector_author)) > 0:
+                author = bs.select(self.media.selector_author)[0].text
+            # 获取image_path
+            image_path = ""
+            if len(bs.select(self.media.selector_image_url)) > 0:
+                image_path = bs.select(self.media.selector_image_url)[0].attrs["src"]
+            # write_dir = write_dir + title.replace(" ", "_")
+        df = pd.DataFrame(
+            {
+                "title": [title],
+                "content": [content],
+                "link_url": [site_url],
+                "text_path": [text_path],
+                "publish_date": [publish_date],
+                "author": [author],
+                "image_path": [image_path],
+            }
+        )
+        return df
+
+    # 函数功能：使用selenium爬取网站
+    # 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
+    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
+    def crawl_news_Selenium(self, path="xpath"):
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-javascript")
+        driver = webdriver.Chrome(chrome_options=chrome_options)
+        driver.get(self.site_url)
+        # 获取text_path（指写入s3路径）
+        text_path = ""
+        wait = WebDriverWait(driver, timeout=10)
+        if path == "xpath":
+            # title、content为必须
+            try:
+                title = wait.until(
+                    EC.presence_of_element_located((By.XPATH, self.media.xpath_title))
+                ).text
+                content = wait.until(
+                    EC.presence_of_element_located((By.XPATH, self.media.xpath_content))
+                ).text
+            except:
+                return
+            publish_date = author = image_path = ""
+            try:
+                image_path = wait.until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, self.media.xpath_image_url)
+                    )
+                ).get_attribute("src")
+                publish_date = wait.until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, self.media.xpath_publish_date)
+                    )
+                ).text
+                author = wait.until(
+                    EC.presence_of_element_located((By.XPATH, self.media.xpath_author))
+                ).text
+            except:
+                pass
+        if path == "css_selector":
+            # title、content为必须
+            try:
+                title = wait.until(
+                    EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, self.media.selector_title)
+                    )
+                ).text
+                content = wait.until(
+                    EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, self.media.selector_content)
+                    )
+                ).text
+            except:
+                return
+            publish_date = author = image_path = ""
+            try:
+                image_path = wait.until(
+                    EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, self.media.selector_image_url)
+                    )
+                ).get_attribute("src")
+                publish_date = wait.until(
+                    EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, self.media.selector_publish_date)
+                    )
+                ).text
+                author = wait.until(
+                    EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, self.media.selector_author)
+                    )
+                ).text
+            except:
+                pass
+        df = pd.DataFrame(
+            {
+                "title": [title],
+                "content": [content],
+                "link_url": [site_url],
+                "text_path": [text_path],
+                "publish_date": [publish_date],
+                "author": [author],
+                "image_path": [image_path],
+            }
+        )
+        return df
 
 
 if __name__ == "__main__":
     thread_list = []
     news_links = get_news_links(rss_urls)
-    f = open("siteurl.txt", "a")
-    for i in news_links:
-        f.write(i + "\n")
-    f.close()
+    with open("siteurl.txt", "a") as f:
+        for i in news_links:
+            f.write(i + "\n")
     df_result["site_url"] = news_links
     df_result["title"] = ""
     df_result["content"] = ""
@@ -319,11 +318,10 @@ if __name__ == "__main__":
         thread_list.append(thread)
     for t in thread_list:
         t.join()
-    f = open("异常url.txt", "r")
-    failed_urls = f.readlines()
-    for i in range(len(failed_urls)):
-        failed_urls[i] = failed_urls[i].replace("\n", "")
-    f.close()
+    with open("异常url.txt", "r") as f:
+        failed_urls = f.readlines()
+        for i in range(len(failed_urls)):
+            failed_urls[i] = failed_urls[i].replace("\n", "")
     # 对于没有爬取到内容的url，再爬取n_repeat次
     n_repeat = 3
     i = 0
@@ -332,21 +330,30 @@ if __name__ == "__main__":
         # 内容为空的网址继续尝试爬取几次
         for site_url in df_result[df_result["content"] == ""]["site_url"]:
             try:
-                df = crawl_news_Request(site_url, path="css_selector")
+                thread = myThread(site_url)
+                df = thread.crawl_news_Request(path="css_selector")
                 # df=crawl_news(site_url)
                 rows = df_result.site_url == site_url
                 df_result.loc[rows, "title"] = df["title"][0]
                 df_result.loc[rows, "content"] = df["content"][0]
-                now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                f = open("二次成功url.txt", "a")
-                f.write(now + " " + site_url + "\n")
-                f.close()
+                with open("二次成功url.txt", "a") as f:
+                    f.write(
+                        datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+                        + " "
+                        + site_url
+                        + "\n"
+                    )
                 # print(df["title"][0], df["content"][0])
             except Exception as e:
-                f = open("二次异常url.txt", "a")
-                now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                f.write(now + " " + site_url + " error info: " + str(e) + "\n")
-                f.close()
+                with open("二次异常url.txt", "a") as f:
+                    f.write(
+                        datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+                        + " "
+                        + site_url
+                        + " error info: "
+                        + str(e)
+                        + "\n"
+                    )
                 continue
     df_result.to_excel("result.xlsx", index=False)
     # 单线程版本

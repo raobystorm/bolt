@@ -37,3 +37,4 @@ def insert_media_list() -> None:
             session.add(data)
 
     session.commit()
+    session.close()
