@@ -1,8 +1,11 @@
+import logging
 import random
 import threading
 # 告警关闭
 import warnings
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from time import sleep
 from urllib.parse import urlparse
 
 import pandas as pd
@@ -18,17 +21,19 @@ from selenium.webdriver.support.wait import WebDriverWait
 from sqlalchemy.orm import sessionmaker
 from urllib3.util.retry import Retry
 
-from db import Article, Media, get_db_engine
+from db import Article, Media
+from db.db import get_db_engine
 
 warnings.filterwarnings("ignore")
 
-# 全局变量部分
-threadmax = threading.BoundedSemaphore(5)
+THREAD_MAX = 5
 requests.adapters.DEFAULT_RETRIES = 3
+logger = logging.getLogger(__name__)
+
 # 代理服务器
-proxies = {"http": "127.0.0.1:7890", "https": "127.0.0.1:7890"}
+PROXIES = {"http": "127.0.0.1:7890", "https": "127.0.0.1:7890"}
 # UA 列表
-user_agent_list = [
+USER_AGENT_LIST = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36",
     "Mozilla/5.0 (iPhone; CPU iPhone OS 14_4_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Mobile/15E148 Safari/604.1",
     "Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)",
@@ -37,7 +42,7 @@ user_agent_list = [
 ]
 # headers={"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36'}
 # 获取新闻链接的rss源
-rss_urls = [
+RSS_URLS = [
     "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
     "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml",
     "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml",
@@ -49,7 +54,7 @@ rss_urls = [
     "https://www.forbes.com/real-time/feed/",
 ]
 # 获取新闻链接对应的内容是否已经爬取，如果已经爬取df['content']=1否则为0，对于为零的内容可重复尝试爬取几次提高成功率
-df_result = pd.DataFrame(columns=["site_url", "content"])
+DF_RESULT = pd.DataFrame(columns=["article_url", "content"])
 
 
 # 函数功能：实现httpRequest功能
@@ -62,13 +67,14 @@ def httpRequest(url):
         session.mount("http://", adapter)
         session.mount("https://", adapter)
         # response = session.get(url, headers=headers,proxies=proxies, verify=False, timeout=30)
-        headers = {"User-Agent": random.choice(user_agent_list)}
+        headers = {"User-Agent": random.choice(USER_AGENT_LIST)}
         session.headers.update({"User-Agent": headers["User-Agent"]})
         response = session.get(url, headers=headers, timeout=30)
         # print(session.headers['user-agent'])
         if response.status_code == 200:
             return response
-    except:
+    except Exception as e:
+        logger.error(f"httpRequests失败: {url}, {e}")
         return ""
 
 
@@ -89,38 +95,32 @@ def get_news_links(rss_urls: list[str]):
                 # summary = i.summary.text
                 # print(f'Link:{link}\n\n------------------------\n')
                 news_links.append(link)
-        except:
-            print(url + "出现异常")
+        except Exception as e:
+            logger.error(f"get_news_links出现异常: {url}, {e}")
             continue
     return news_links
 
 
 class myThread(threading.Thread):
-    def __init__(self, site_url):
+    def __init__(self, article_url, Session):
         threading.Thread.__init__(self)
-        engine = get_db_engine()
-        self.session = sessionmaker(bind=engine)()
-        self.site_url = site_url
-        host = urlparse(site_url)[1]
-        self.media = self.session.query(Media).filter(Media.name == host).first()
+        self.session = Session()
+        self.article_url = article_url
+        host = urlparse(article_url)[1]
+        self.media = self.session.query(Media).filter(Media.base_url == host).first()
         self.exit_code = 0
 
     def run(self):
         try:
             self._run()
-        except Exception:
+        except Exception as e:
             self.exit_code = 1
-            threadmax.release()
-            with open("异常url.txt", "a") as f:
-                datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                f.write(self.site_url + "\n")
-            # raise Exception(str(self.site_url) + "出现异常")
+            logger.error(f"异常url: {self.article_url}, {e}")
+            # raise Exception(str(self.article_url) + "出现异常")
         finally:
-            self.session.commit()
             self.session.close()
 
     def _run(self):
-        threadmax.acquire()
         # 用于写入数据库的df
         df = self.crawl_news_Request(path="xpath")
         content_len = sum(map(len, df["content"]))
@@ -132,37 +132,35 @@ class myThread(threading.Thread):
             content_len = sum(map(len, df["content"]))
         if content_len == 0:
             df = self.crawl_news_Selenium(path="css_selector")
-        # 成功爬取后更新对应的site_url的content为1，表示该url已经获取了内容
-        rows = df_result.site_url == self.site_url
-        df_result.loc[rows, "title"] = df["title"][0]
-        df_result.loc[rows, "content"] = df["content"][0]
+        # 成功爬取后更新对应的article_url的content为1，表示该url已经获取了内容
+        rows = DF_RESULT.article_url == self.article_url
+        DF_RESULT.loc[rows, "title"] = df["title"][0]
+        DF_RESULT.loc[rows, "content"] = df["content"][0]
         # TODO: 完善DB部分和S3，SQS
-        s3_prefix = f"Articles/media={self.media.name}/Year={year}/Month={month}/Day={day}/Hour={hour}/"
+        now = datetime.now()
+        s3_prefix = f"Articles/media={self.media.name}/Year={now.year}/Month={now.month}/Day={now.day}/Hour={now.hour}/"
         article = Article(
             media_id=self.media.id,
-            title=df["title"],
-            author=df["author"],
-            link_url=df["link_url"],
+            title=df["title"][0],
+            author=df["author"][0],
+            link_url=df["link_url"][0],
             s3_prefix=s3_prefix,
         )
         self.session.add(article)
         # write_s3(self.Media, df["title"], df["content"])
-        datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        with open("成功url.txt", "a") as f:
-            f.write(self.site_url + "\n")
         # print(df["title"], df["content"])
         # send_SQS(self.Media, df["title"])
         self.session.commit()
-        threadmax.release()
+        logger.info(f"成功url: {self.article_url}")
 
     # 函数功能：使用request爬取网站
-    # 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
-    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
+    # 参数：article_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
+    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同article_url）
     def crawl_news_Request(self, path="xpath"):
         # 获取text_path（指写入s3路径）
         text_path = ""
         # 获取title并查重
-        response = httpRequest(self.site_url)
+        response = httpRequest(self.article_url)
         if response == "":
             return
         html = response.text
@@ -205,7 +203,7 @@ class myThread(threading.Thread):
             {
                 "title": [title],
                 "content": [content],
-                "link_url": [site_url],
+                "link_url": [self.article_url],
                 "text_path": [text_path],
                 "publish_date": [publish_date],
                 "author": [author],
@@ -215,13 +213,13 @@ class myThread(threading.Thread):
         return df
 
     # 函数功能：使用selenium爬取网站
-    # 参数：site_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
-    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同site_url）
+    # 参数：article_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
+    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同article_url）
     def crawl_news_Selenium(self, path="xpath"):
         chrome_options = Options()
         chrome_options.add_argument("--disable-javascript")
         driver = webdriver.Chrome(chrome_options=chrome_options)
-        driver.get(self.site_url)
+        driver.get(self.article_url)
         # 获取text_path（指写入s3路径）
         text_path = ""
         wait = WebDriverWait(driver, timeout=10)
@@ -234,7 +232,7 @@ class myThread(threading.Thread):
                 content = wait.until(
                     EC.presence_of_element_located((By.XPATH, self.media.xpath_content))
                 ).text
-            except:
+            except Exception:
                 return
             publish_date = author = image_path = ""
             try:
@@ -251,7 +249,7 @@ class myThread(threading.Thread):
                 author = wait.until(
                     EC.presence_of_element_located((By.XPATH, self.media.xpath_author))
                 ).text
-            except:
+            except Exception:
                 pass
         if path == "css_selector":
             # title、content为必须
@@ -266,7 +264,7 @@ class myThread(threading.Thread):
                         (By.CSS_SELECTOR, self.media.selector_content)
                     )
                 ).text
-            except:
+            except Exception:
                 return
             publish_date = author = image_path = ""
             try:
@@ -285,13 +283,13 @@ class myThread(threading.Thread):
                         (By.CSS_SELECTOR, self.media.selector_author)
                     )
                 ).text
-            except:
+            except Exception:
                 pass
         df = pd.DataFrame(
             {
                 "title": [title],
                 "content": [content],
-                "link_url": [site_url],
+                "link_url": [self.article_url],
                 "text_path": [text_path],
                 "publish_date": [publish_date],
                 "author": [author],
@@ -301,74 +299,69 @@ class myThread(threading.Thread):
         return df
 
 
-if __name__ == "__main__":
-    thread_list = []
-    news_links = get_news_links(rss_urls)
+def thread_pool_worker(job):
+    article_url, Session = job
+    thread = myThread(article_url=article_url, Session=Session)
+    thread.start()
+
+
+def main():
+    news_links = get_news_links(RSS_URLS)
     with open("siteurl.txt", "a") as f:
         for i in news_links:
             f.write(i + "\n")
-    df_result["site_url"] = news_links
-    df_result["title"] = ""
-    df_result["content"] = ""
+    DF_RESULT["article_url"] = news_links
+    DF_RESULT["title"] = ""
+    DF_RESULT["content"] = ""
+    engine = get_db_engine()
+    Session = sessionmaker(bind=engine)
     # news_links=["https://www.nytimes.com/2023/05/12/business/media/last-hollywood-writers-strike.html"]
     # 多线程版本
-    for site_url in df_result[df_result["content"] == ""]["site_url"]:
-        thread = myThread(site_url)
-        thread.start()
-        thread_list.append(thread)
-    for t in thread_list:
-        t.join()
-    with open("异常url.txt", "r") as f:
-        failed_urls = f.readlines()
-        for i in range(len(failed_urls)):
-            failed_urls[i] = failed_urls[i].replace("\n", "")
-    # 对于没有爬取到内容的url，再爬取n_repeat次
-    n_repeat = 3
-    i = 0
-    while i < n_repeat:
-        i = i + 1
-        # 内容为空的网址继续尝试爬取几次
-        for site_url in df_result[df_result["content"] == ""]["site_url"]:
-            try:
-                thread = myThread(site_url)
-                df = thread.crawl_news_Request(path="css_selector")
-                # df=crawl_news(site_url)
-                rows = df_result.site_url == site_url
-                df_result.loc[rows, "title"] = df["title"][0]
-                df_result.loc[rows, "content"] = df["content"][0]
-                with open("二次成功url.txt", "a") as f:
-                    f.write(
-                        datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                        + " "
-                        + site_url
-                        + "\n"
-                    )
-                # print(df["title"][0], df["content"][0])
-            except Exception as e:
-                with open("二次异常url.txt", "a") as f:
-                    f.write(
-                        datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-                        + " "
-                        + site_url
-                        + " error info: "
-                        + str(e)
-                        + "\n"
-                    )
-                continue
-    df_result.to_excel("result.xlsx", index=False)
+    with ThreadPoolExecutor(max_workers=THREAD_MAX) as pool:
+        for article_url in DF_RESULT[DF_RESULT["content"] == ""]["article_url"]:
+            pool.submit(thread_pool_worker, (article_url, Session))
+
+        # 对于没有爬取到内容的url，再爬取n_repeat次
+        n_repeat = 3
+        i = 0
+        while i < n_repeat:
+            i = i + 1
+            # 内容为空的网址继续尝试爬取几次
+            for article_url in DF_RESULT[DF_RESULT["content"] == ""]["article_url"]:
+                try:
+                    thread = myThread(article_url, Session)
+                    df = thread.crawl_news_Request(path="css_selector")
+                    # df=crawl_news(article_url)
+                    rows = DF_RESULT.article_url == article_url
+                    DF_RESULT.loc[rows, "title"] = df["title"][0]
+                    DF_RESULT.loc[rows, "content"] = df["content"][0]
+                    logger.info(f"二次成功url: {article_url}")
+                    # print(df["title"][0], df["content"][0])
+                except Exception as e:
+                    logger.error(f"二次异常: {article_url}, {e}")
+                    sleep(5)
+        DF_RESULT.to_excel("result.xlsx", index=False)
+
+
+if __name__ == "__main__":
+    formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    handler = logging.FileHandler("crawler.log")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    main()
     # 单线程版本
-    # for site_url in news_links:
+    # news_links = get_news_links(RSS_URLS)
+    # with open("siteurl.txt", "a") as f:
+    #     for i in news_links:
+    #         f.write(i + "\n")
+    # DF_RESULT["article_url"] = news_links
+    # DF_RESULT["title"] = ""
+    # DF_RESULT["content"] = ""
+    # engine = get_db_engine()
+    # Session = sessionmaker(bind=engine)
+    # for article_url in news_links:
     #     try:
-    #         df=crawl_news_Request(site_url,path="css_selector")
-    #         #df=crawl_news(site_url)
-    #         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    #         f = open("成功url.txt", "a")
-    #         f.write(now + " " + site_url + "\n")
-    #         f.close()
-    #         print(df["title"][0], df["content"][0])
-    #     except Exception as e:
-    #         f = open("异常url.txt", "a")
-    #         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    #         f.write(now + " " + site_url +" error info: " +str(e)+"\n")
-    #         f.close()
-    #         continue
+    #         thread = myThread(article_url=article_url, Session=Session)
+    #         thread._run()
+    #     finally:
+    #         thread.session.close()
