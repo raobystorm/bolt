@@ -1,6 +1,8 @@
+import json
 import logging
 import random
 import threading
+
 # 告警关闭
 import warnings
 from concurrent.futures import ThreadPoolExecutor
@@ -8,6 +10,7 @@ from datetime import datetime
 from time import sleep
 from urllib.parse import urlparse
 
+import boto3
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -43,7 +46,7 @@ USER_AGENT_LIST = [
 # headers={"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36'}
 # 获取新闻链接的rss源
 RSS_URLS = [
-    "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
+    # "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
     "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml",
     "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml",
     "https://rss.nytimes.com/services/xml/rss/nyt/Space.xml",
@@ -55,6 +58,8 @@ RSS_URLS = [
 ]
 # 获取新闻链接对应的内容是否已经爬取，如果已经爬取df['content']=1否则为0，对于为零的内容可重复尝试爬取几次提高成功率
 DF_RESULT = pd.DataFrame(columns=["article_url", "content"])
+
+SQS_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod"
 
 
 # 函数功能：实现httpRequest功能
@@ -101,6 +106,30 @@ def get_news_links(rss_urls: list[str]):
     return news_links
 
 
+# 函数功能：将爬取的信息写入消息队列
+def send_SQS(media_id, article_id, title, s3_prefix, target_lang="zh-CN"):
+    sqs = boto3.client("sqs", region_name="us-west-2")
+    # 需要发送3个消息，分别为"summarize_article", "summarize_title", "translate_article"
+    job = {
+        "media_id": media_id,
+        "article_id": article_id,
+        "title": title,
+        "s3_prefix": s3_prefix,
+        "job_type": "summarize_title",
+        "target_lang": target_lang,
+    }
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(job))
+    job["job_type"] = "summarize_article"
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(job))
+    job["job_type"] = "translate_article"
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(job))
+
+
+def write_s3(s3_prefix, content):
+    s3 = boto3.client("s3", region_name="us-west-2")
+    s3.put_object(Bucket="bolt-prod", Key=f"{s3_prefix}/article.txt", Body=content)
+
+
 class myThread(threading.Thread):
     def __init__(self, article_url, Session):
         threading.Thread.__init__(self)
@@ -136,9 +165,9 @@ class myThread(threading.Thread):
         rows = DF_RESULT.article_url == self.article_url
         DF_RESULT.loc[rows, "title"] = df["title"][0]
         DF_RESULT.loc[rows, "content"] = df["content"][0]
-        # TODO: 完善DB部分和S3，SQS
         now = datetime.now()
-        s3_prefix = f"Articles/media={self.media.name}/Year={now.year}/Month={now.month}/Day={now.day}/Hour={now.hour}/"
+        title_key = df["title"][0].replace(" ", "_")
+        s3_prefix = f"Articles/media={self.media.name}/Year={now.year}/Month={now.month}/Day={now.day}/Hour={now.hour}/{title_key}"
         article = Article(
             media_id=self.media.id,
             title=df["title"][0],
@@ -147,10 +176,10 @@ class myThread(threading.Thread):
             s3_prefix=s3_prefix,
         )
         self.session.add(article)
-        # write_s3(self.Media, df["title"], df["content"])
+        write_s3(s3_prefix, df["content"][0])
         # print(df["title"], df["content"])
-        # send_SQS(self.Media, df["title"])
         self.session.commit()
+        send_SQS(self.media.id, article.id, article.title, article.s3_prefix)
         logger.info(f"成功url: {self.article_url}")
 
     # 函数功能：使用request爬取网站
