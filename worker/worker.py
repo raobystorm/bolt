@@ -1,27 +1,27 @@
-import asyncio
 import argparse
-from enum import StrEnum
+import asyncio
 import json
 import logging
 import os
 from dataclasses import dataclass
+from enum import StrEnum
 
 from aiobotocore.session import get_session
 from langcodes import Language
-from consts import QUEUE_WORKER_URL
-from db import get_db_engine_async, user_media, user_article
-from sqlalchemy import select
-
-
+from requests import Session
+from sqlalchemy.orm import sessionmaker
 from utils import (
+    check_file_in_s3,
+    get_text_file_from_s3,
+    put_text_file_to_s3,
     summarize_article,
     summarize_title,
     translate_article,
     translate_title,
-    get_text_file_from_s3,
-    put_text_file_to_s3,
-    check_file_in_s3,
 )
+
+from consts import QUEUE_WORKER_URL
+from db import UserArticle, UserMedia, get_db_engine
 
 
 class JobType(StrEnum):
@@ -93,26 +93,29 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> None:
     await put_text_file_to_s3(res_path, text)
 
 
-async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
+def put_user_articles(
+    media_id: int, article_id: int, lang: str, db_session: sessionmaker[Session]
+) -> None:
     """完成文章的摘要和翻译后将其推送给已订阅的用户."""
-    engine = get_db_engine_async()
-    async with engine.begin() as conn:
-        result = await conn.execute(
-            select(user_media.c.user_id).where(
-                user_media.c.media_id == media_id and user_media.c.lang == lang
-            )
+    session = db_session()
+    try:
+        user_medias = (
+            session.query(UserMedia)
+            .filter(UserMedia.media_id == media_id and UserMedia.lang == lang)
+            .all()
         )
-        user_ids = list(result.fetchall())
-        insert_data = [
-            {"user_id": user_id[0], "article_id": article_id} for user_id in user_ids
-        ]
-        await conn.execute(user_article.insert(), insert_data)
+        for user_media in user_medias:
+            session.add(UserArticle(user_id=user_media.user_id, article_id=article_id))
 
-    await engine.dispose()
+        session.commit()
+    finally:
+        session.close()
 
 
 async def main(args: argparse.Namespace) -> None:
     session = get_session()
+    engine = get_db_engine()
+    sessionmaker(bind=engine)
     async with session.create_client("sqs", region_name="us-west-2") as sqs:
         while True:
             try:
@@ -133,7 +136,7 @@ async def main(args: argparse.Namespace) -> None:
                             logging.info(
                                 f"All jobs of the article {job.article_id} is finished!"
                             )
-                            await put_user_articles(
+                            put_user_articles(
                                 job.media_id, job.article_id, job.target_lang
                             )
                 else:
