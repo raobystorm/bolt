@@ -1,15 +1,7 @@
 import os
 
-from sqlalchemy import (
-    BigInteger,
-    Column,
-    DateTime,
-    ForeignKey,
-    Index,
-    String,
-    create_engine,
-    func,
-)
+from sqlalchemy import (BigInteger, Column, DateTime, ForeignKey, Index,
+                        String, create_engine, func)
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -41,16 +33,16 @@ class Media(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     base_url = Column(String(512), nullable=False)
-    rss_url = Column(String(512), nullable=True)
+    rss_url = Column(String(512), nullable=False)
     xpath_title = Column(String(1024), nullable=False)
-    xpath_publish_date = Column(String(1024), nullable=True)
-    xpath_author = Column(String(1024), nullable=True)
-    xpath_image_url = Column(String(1024), nullable=True)
+    xpath_publish_date = Column(String(1024), nullable=False)
+    xpath_author = Column(String(1024), nullable=False)
+    xpath_image_url = Column(String(1024), nullable=False)
     xpath_content = Column(String(1024), nullable=False)
     selector_title = Column(String(1024), nullable=False)
-    selector_publish_date = Column(String(1024), nullable=True)
-    selector_author = Column(String(1024), nullable=True)
-    selector_image_url = Column(String(1024), nullable=True)
+    selector_publish_date = Column(String(1024), nullable=False)
+    selector_author = Column(String(1024), nullable=False)
+    selector_image_url = Column(String(1024), nullable=False)
     selector_content = Column(String(1024), nullable=False)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
@@ -67,9 +59,10 @@ class Article(Base):
         BigInteger, ForeignKey("category.id", ondelete="CASCADE"), nullable=True
     )
     title = Column(String(512), nullable=False)
-    author = Column(String(255), nullable=True)
+    author = Column(String(255), nullable=False)
     link_url = Column(String(1024), nullable=False)
-    s3_prefix = Column(String(1024), nullable=True)
+    s3_prefix = Column(String(1024), nullable=False)
+    image_link = (Column(String(1024), nullable=False))
     publish_date = Column(DateTime, default=func.now())
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

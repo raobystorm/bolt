@@ -29,6 +29,7 @@ class JobType(StrEnum):
     TRANSLATE_TITLE = "translate_title"
     TRANSLATE_ARTICLE = "translate_article"
     SUMMARIZE_TITLE = "summarize_title"
+    GET_IMAGE = "get_image"
 
 
 @dataclass
@@ -38,6 +39,7 @@ class WorkerJob:
     title: str
     s3_prefix: str
     job_type: JobType = JobType.SUMMARIZE_ARTICLE
+    image_link: str = ""
     target_lang: str = "zh-CN"
 
 
@@ -87,6 +89,8 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> None:
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "title.txt"
             )
+        case JobType.GET_IMAGE:
+            pass
         case _:
             raise ValueError(f"Not supported job type: {job.job_type}")
 
@@ -127,6 +131,8 @@ async def main(args: argparse.Namespace) -> None:
                         json_dict = json.loads(message["Body"])
                         job = WorkerJob(**json_dict)
                         logging.info(f"process job: {job}")
+                        if job.job_type == JobType.GET_IMAGE:
+                            continue
                         await process_job(job, args.use_gpt4)
                         await sqs.delete_message(
                             QueueUrl=QUEUE_WORKER_URL,

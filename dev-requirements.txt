@@ -21,3 +21,5 @@ mysql-connector-python
 pandas
 requests
 bs4
+lxml
+selenium
