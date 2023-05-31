@@ -1,5 +1,6 @@
 import json
 import os
+
 import aiohttp
 
 
@@ -15,8 +16,10 @@ async def _call_openai(json_body: dict) -> str:
             headers=headers,
             json=json_body,
         ) as response:
-            json_resp = json.loads(await response.text())
-            return json_resp["choices"][0]["message"]["content"].strip()
+            if response.status == 200:
+                json_resp = json.loads(await response.text())
+                return json_resp["choices"][0]["message"]["content"].strip()
+            return ""
 
 
 async def summarize_article(text: str, lang: str, use_gpt4: bool = False) -> str:
