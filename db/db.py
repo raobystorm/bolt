@@ -1,7 +1,15 @@
 import os
 
-from sqlalchemy import (BigInteger, Column, DateTime, ForeignKey, Index,
-                        String, create_engine, func)
+from sqlalchemy import (
+    BigInteger,
+    Column,
+    DateTime,
+    ForeignKey,
+    PrimaryKeyConstraint,
+    String,
+    create_engine,
+    func,
+)
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -62,7 +70,7 @@ class Article(Base):
     author = Column(String(255), nullable=False)
     link_url = Column(String(1024), nullable=False)
     s3_prefix = Column(String(1024), nullable=False)
-    image_link = (Column(String(1024), nullable=False))
+    image_link = Column(String(1024), nullable=False)
     publish_date = Column(DateTime, default=func.now())
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
@@ -83,12 +91,17 @@ class Category(Base):
 class UserMedia(Base):
     __tablename__ = "user_media"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(
-        BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+        BigInteger,
+        ForeignKey("user.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
     )
     media_id = Column(
-        BigInteger, ForeignKey("media.id", ondelete="CASCADE"), nullable=False
+        BigInteger,
+        ForeignKey("media.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
     )
     lang = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=func.now())
@@ -97,18 +110,23 @@ class UserMedia(Base):
     user = relationship("User", backref="user_medias")
     media = relationship("Media", backref="user_medias")
 
-    user_media_index = Index("user_media_index", media_id, lang, unique=True)
+    __table_args__ = (PrimaryKeyConstraint("user_id", "media_id"), {})
 
 
 class UserArticle(Base):
     __tablename__ = "user_article"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(
-        BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+        BigInteger,
+        ForeignKey("user.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
     )
     article_id = Column(
-        BigInteger, ForeignKey("article.id", ondelete="CASCADE"), nullable=False
+        BigInteger,
+        ForeignKey("article.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
     )
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
@@ -116,7 +134,7 @@ class UserArticle(Base):
     user = relationship("User", backref="user_articles")
     article = relationship("Article", backref="user_articles")
 
-    user_article_index = Index("user_article_index", user_id, unique=True)
+    __table_args__ = (PrimaryKeyConstraint("user_id", "article_id"), {})
 
 
 def get_db_engine_async() -> AsyncEngine:

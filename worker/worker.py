@@ -3,12 +3,14 @@ import asyncio
 import json
 import logging
 import os
+import traceback
 from dataclasses import dataclass
 from enum import StrEnum
 
 from aiobotocore.session import get_session
 from langcodes import Language
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from utils import (
     check_file_in_s3,
     get_text_file_from_s3,
@@ -20,7 +22,7 @@ from utils import (
 )
 
 from consts import QUEUE_WORKER_URL
-from db import UserArticle, UserMedia, get_db_engine
+from db import UserArticle, UserMedia, get_db_engine_async
 
 
 class JobType(StrEnum):
@@ -99,27 +101,27 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> bool:
     return text != ""
 
 
-def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
+async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
     """完成文章的摘要和翻译后将其推送给已订阅的用户."""
-    engine = get_db_engine()
-    db_sess = sessionmaker(bind=engine)()
+    engine = get_db_engine_async()
     try:
-        user_medias = (
-            db_sess.query(UserMedia)
-            .filter(UserMedia.media_id == media_id and UserMedia.lang == lang)
-            .all()
-        )
-        user_articles = []
-        for user_media in user_medias:
-            user_articles.append(
-                UserArticle(user_id=user_media.user_id, article_id=article_id)
+        async with async_sessionmaker(
+            engine, autoflush=True, expire_on_commit=False
+        )() as db_sess:
+            stmt = select(UserMedia.user_id).where(
+                UserMedia.media_id == media_id and UserMedia.lang == lang
             )
+            user_ids = await db_sess.execute(stmt)
+            user_articles = []
+            for user_id in user_ids:
+                user_articles.append(
+                    UserArticle(user_id=user_id[0], article_id=article_id)
+                )
 
-        db_sess.add_all(user_articles)
-        db_sess.commit()
+            db_sess.add_all(user_articles)
+            await db_sess.commit()
     finally:
-        db_sess.close()
-        engine.dispose()
+        await engine.dispose()
 
 
 async def main(args: argparse.Namespace) -> None:
@@ -146,15 +148,15 @@ async def main(args: argparse.Namespace) -> None:
                                 logging.info(
                                     f"All jobs of the article {job.article_id} is finished!"
                                 )
-                                put_user_articles(
+                                await put_user_articles(
                                     job.media_id,
                                     job.article_id,
                                     job.target_lang,
                                 )
                 else:
                     logging.info("No messages in queue.")
-            except Exception as e:
-                logging.error(f"{type(e)}: {e}")
+            except Exception:
+                logging.error(traceback.format_exc())
                 continue
             finally:
                 await asyncio.sleep(0.5)
