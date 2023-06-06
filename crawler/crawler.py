@@ -1,203 +1,371 @@
-# import newspaper
-import pandas as pd
-import numpy as np
-import re
-import os
-
-import time, datetime
-
-import requests, pickle, zipfile, io
-from bs4 import BeautifulSoup
-
+import json
+import logging
 import threading
 
+# 告警关闭
+import warnings
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from datetime import datetime
+from urllib.parse import urlparse
+
 import boto3
+import requests
+from bs4 import BeautifulSoup
+from lxml import etree
+from rss import DEFAULT_DATETIME, httpRequest, parse_datetime
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from sqlalchemy.orm import sessionmaker
 
-threadmax = threading.BoundedSemaphore(3)
+from db import Article, Media, get_db_engine
 
-#函数功能：将爬取的信息写入aws的s3
-def write_s3(media,title,content):
-    # 获取当前时间，用于创建日期目录
-    now = datetime.datetime.now()
-    year = now.strftime("%Y")
-    month = now.strftime("%m")
-    day = now.strftime("%d")
-    hour = now.strftime("%H")
-    write_dir = f"Articles/media={media}/Year={year}/Month={month}/Day={day}/Hour={hour}/"
-    # 把爬取的内容写成一个文件，文件名为新闻来源加时间戳，内容为新闻标题和新闻正文
-    session = boto3.Session(profile_name="bolt")
-    s3 = session.resource("s3")
-    object = s3.Object("bolt-prod", write_dir + "/article.txt")
-    object.put(Body=title+"\n"+content)
-    return
+warnings.filterwarnings("ignore")
 
-#函数功能：爬取newsweek网站
-def crawl_newsweek(site_url,selector_path,title_list):
-    
-    response = requests.get(site_url, headers=headers)
-    # response = requests.get(craspurl)
-    html = response.text
-    bs = BeautifulSoup(html, "html.parser")
-    ele = bs.select(selector_path)[0]
-    
-    # 获取link_url
-    link_url = "https://www.newsweek.com/" + ele.select("a")[0].attrs["href"]    
-    #获取text_path（指写入s3路径）
-    text_path=""
-    response = requests.get(link_url, headers=headers)
-    html = response.text
-    bs = BeautifulSoup(html, "html.parser")
-    
-    #获取title并查重
-    title = bs.select("[class*=title]")[0].text
-    # 进行title查重，查找title列表里是否有该标题，如果没有再进行抓取
-    if title not in title_list:
-        title_list.append(title)
-    else:
-        return
-    #获取publish_date
-    publish_date=bs.select("time")[0].attrs['datetime']
-    #获取author
-    author=bs.select(".author")[0].text
-    #获取image_path
-    image_path=bs.select(".article-body img")[0].attrs['src']
-    #获取content
-    #write_dir = write_dir + title.replace(" ", "_") 
-    # 新闻周刊正文分布在多个段落P中，需要获取每一个段落的文字
-    content = ""
-    length = len(bs.select(".article-body")[0].find_all("p"))
-    for i in range(0, length):
-        content += bs.select(".article-body")[0].find_all("p")[i].text
-    df=pd.DataFrame({'title':[title],'content':[content],'link_url':[link_url],'text_path':[text_path],'publish_date':[publish_date],'author':[author],'image_path':[image_path]})
-    return df
+THREAD_MAX = 4
+requests.adapters.DEFAULT_RETRIES = 3
+logger = logging.getLogger(__name__)
 
-def crawl_times(site_url,selector_path,title_list):
-    return
-
-#函数功能：爬取nytimes网站    
-def crawl_nytimes(site_url,selector_path,title_list):
-    response = requests.get(site_url, headers=headers)
-    # response = requests.get(craspurl)
-    html = response.text
-    bs = BeautifulSoup(html, "html.parser")
-    ele = bs.select(selector_path)[0]
-    # 获取link_url
-    link_url = ele.select("a")[0].attrs["href"]    
-    if(link_url.__contains__("http")==False):
-        link_url="https://www.nytimes.com"+link_url
-    #获取text_path（指写入s3路径）
-    text_path=""
-    #获取title并查重
-    response = requests.get(link_url, headers=headers)
-    html = response.text
-    bs = BeautifulSoup(html, "html.parser")
-    title = bs.select("[id*=link-]")[0].text
-    # 进行title查重，查找title列表里是否有该标题，如果没有再进行抓取
-    if title not in title_list:
-        title_list.append(title)
-    else:
-        return
-    #获取publish_date
-    publish_date=bs.select("time")[0].attrs['datetime']
-    #获取author
-    author=bs.select(".e1jsehar0")[0].text
-    #获取image_path
-    image_path=bs.select("img")[0].attrs['src']
-    #获取content
-    #write_dir = write_dir + title.replace(" ", "_") 
-    # 新闻周刊正文分布在多个段落P中，需要获取每一个段落的文字
-    content = ""
-    length = len(bs.select(".meteredContent")[0].find_all("p"))
-    for i in range(0, length):
-        content += bs.select(".meteredContent")[0].find_all("p")[i].text
-    df=pd.DataFrame({'title':[title],'content':[content],'link_url':[link_url],'text_path':[text_path],'publish_date':[publish_date],'author':[author],'image_path':[image_path]})
-    return df
-    
-def get_news_info(media,site_url,selector_path,title_list):    
-    #用于记录爬虫返回的结果
-    if(media=="NewsWeek"):
-        df=crawl_newsweek(site_url,selector_path,title_list)
-        return df
-    elif(media=="nytimes"):
-        df=crawl_nytimes(site_url,selector_path,title_list)
-        return df
-    else:
-        return
+# 代理服务器
+PROXIES = {"http": "127.0.0.1:7890", "https": "127.0.0.1:7890"}
 
 
-class myThread (threading.Thread):
-    def __init__(self,Media,site_url,selector_path,title_list):
+SQS_QUEUE_URL = "https://sqs.us-west-2.amazonaws.com/396260505786/bolt-worker-prod"
+
+
+@dataclass
+class ArticleDTO:
+    media_id: int
+    article_id: int
+    title: str
+    content: str = ""
+    author: str = ""
+    publish_date: datetime = DEFAULT_DATETIME
+    image_link: str = ""
+
+    def any_empty(self) -> bool:
+        return (
+            self.content == ""
+            or self.author == ""
+            or self.publish_date == DEFAULT_DATETIME
+            or self.image_link == ""
+        )
+
+
+# 函数功能：将爬取的信息写入消息队列
+def send_SQS(
+    *, media_id, article_id, title, s3_prefix, target_lang="zh-CN", image_link=""
+):
+    sqs = boto3.client("sqs", region_name="us-west-2")
+    # 需要发送3个消息，分别为"summarize_article", "summarize_title", "translate_article"
+    job = {
+        "media_id": media_id,
+        "article_id": article_id,
+        "title": title,
+        "s3_prefix": s3_prefix,
+        "job_type": "summarize_title",
+        "target_lang": target_lang,
+        "image_link": image_link,
+    }
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(job))
+    job["job_type"] = "summarize_article"
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(job))
+    job["job_type"] = "translate_article"
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(job))
+    if image_link != "":
+        job["job_type"] = "get_image"
+        sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps(job))
+
+
+def write_s3(s3_prefix, content):
+    s3 = boto3.client("s3", region_name="us-west-2")
+    s3.put_object(Bucket="bolt-prod", Key=f"{s3_prefix}/article.txt", Body=content)
+
+
+class myThread(threading.Thread):
+    def __init__(self, article_link: str, use_selenium):
         threading.Thread.__init__(self)
-        self.Media=Media
-        self.site_url=site_url
-        self.selector_path=selector_path
-        self.title_list=title_list
+        self.article_link = article_link
+        self.engine = None
+        self.session = None
+        self.article = None
+        self.media = None
         self.exit_code = 0
+        self.use_selenium = use_selenium
+        if use_selenium:
+            options = Options()
+            options.add_argument("--disable-javascript")
+            options.add_argument("--disable-dev-shm-usage")
+            self.driver = webdriver.Remote(
+                "http://172.24.0.4:4444", DesiredCapabilities.CHROME, options=options
+            )
+
     def run(self):
         try:
-            self._run()
+            self.engine = get_db_engine()
+            Session = sessionmaker(bind=self.engine)
+            with Session.begin() as db_sess:
+                self.session = db_sess
+                self.article: Article = (
+                    self.session.query(Article)
+                    .filter(Article.link_url == self.article_link)
+                    .first()
+                )
+                host = urlparse(self.article_link)[1]
+                self.media: Media = (
+                    self.session.query(Media).filter(Media.base_url == host).first()
+                )
+                self._run()
         except Exception as e:
             self.exit_code = 1
-            threadmax.release()
-            f=open('异常url.txt','a')
-            now=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-            f.write(now+" "+self.site_url+'\n')
-            f.close()
-            raise Exception( str(self.site_url)+"出现异常\n")     
+            logger.error(f"异常url: {self.article_link}, {e}")
+            # raise Exception(str(self.arteicle_url) + "出现异常")
+        finally:
+            self.engine.dispose()
+            if self.use_selenium:
+                self.driver.quit()
+
     def _run(self):
-        threadmax.acquire()
-        df=get_news_info(self.Media,self.site_url,self.selector_path,self.title_list)
-        f=open('成功url.txt','a')
-        now=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        f.write(now+" "+self.site_url+'\n')
-        f.close()
-        write_s3(self.Media,df['title'],df['content'])
-        threadmax.release()
-        #return df
+        # 用于写入数据库的dto
+        dto = ArticleDTO(
+            media_id=self.media.id, article_id=self.article.id, title=self.article.title
+        )
+        if self.article.publish_date != DEFAULT_DATETIME:
+            dto.publish_date = self.article.publish_date
 
-proxies = {
-    "http": "127.0.0.1:7890",
-    "https": "127.0.0.1:7890",
-}
+        dto = self.crawl_news_Request(dto, path="xpath")
+        if dto.any_empty():
+            dto = self.crawl_news_Request(dto, path="css_selector")
+        if self.use_selenium:
+            if dto.any_empty():
+                dto = self.crawl_news_Selenium(dto, path="xpath")
+            if dto.any_empty():
+                dto = self.crawl_news_Selenium(dto, path="css_selector")
 
-headers = {
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
-}
+        # 成功爬取后更新对应的article_url的content为1，表示该url已经获取了内容
+        if self.article.publish_date == DEFAULT_DATETIME:
+            self.article.publish_date = (
+                dto.publish_date
+                if dto.publish_date != DEFAULT_DATETIME
+                else datetime.now()
+            )
+
+        if self.article.author == "" and dto.author != "":
+            self.article.author = dto.author
+
+        if self.article.image_link == "" and dto.image_link != "":
+            self.article.image_link = dto.image_link
+
+        if len(dto.content) > 0:
+            title_key = self.article.title.replace(" ", "_")
+            pub_date = self.article.publish_date
+            s3_prefix = f"Articles/media={self.media.name}/Year={pub_date.year}/Month={pub_date.month}/Day={pub_date.day}/Hour={pub_date.hour}/{title_key}"
+            self.article.s3_prefix = s3_prefix
+            write_s3(s3_prefix, dto.content)
+            # print(df["title"], df["content"])
+            send_SQS(
+                media_id=self.media.id,
+                article_id=self.article.id,
+                title=self.article.title,
+                s3_prefix=self.article.s3_prefix,
+                image_link=self.article.image_link,
+            )
+            self.check_result(dto.content)
+
+    # 函数功能：使用request爬取网站
+    # 参数：article_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
+    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同article_url）
+    def crawl_news_Request(self, dto: ArticleDTO, path="xpath") -> ArticleDTO:
+        # 获取title并查重
+        response = httpRequest(self.article.link_url)
+        if response == "":
+            return
+        html = response.text
+        # 获取xpath
+        if path == "xpath":
+            html = etree.HTML(html)
+
+            if dto.content == "" and len(html.xpath(self.media.xpath_content)) > 0:
+                dto.content = html.xpath(self.media.xpath_content)[0].xpath("string(.)")
+            if (
+                dto.publish_date == DEFAULT_DATETIME
+                and len(html.xpath(self.media.xpath_publish_date)) > 0
+            ):
+                dto.publish_date = parse_datetime(
+                    html.xpath(self.media.xpath_publish_date)[0].text
+                )
+            if dto.author == "" and len(html.xpath(self.media.xpath_author)) > 0:
+                dto.author = html.xpath(self.media.xpath_author)[0].text
+            if dto.image_link == "" and len(html.xpath(self.media.xpath_image_url)) > 0:
+                dto.image_link = html.xpath(self.media.xpath_image_url)[0]
+
+        # 获取css_selector
+        if path == "css_selector":
+            bs = BeautifulSoup(html, "html.parser")
+
+            # 正文分布在多个段落P中，需要获取每一个段落的文字
+            content = ""
+            length = len(bs.select(self.media.selector_content))
+            for i in range(0, length):
+                content += bs.select(self.media.selector_content)[i].text
+
+            if dto.content == "" and len(content) > 0:
+                dto.content = content
+
+            # 获取publish_date
+            if (
+                dto.publish_date == DEFAULT_DATETIME
+                and len(bs.select(self.media.selector_publish_date)) > 0
+            ):
+                dto.publish_date = parse_datetime(
+                    bs.select(self.media.selector_publish_date)[0].text
+                )
+            # 获取author
+            if dto.author == "" and len(bs.select(self.media.selector_author)) > 0:
+                dto.author = bs.select(self.media.selector_author)[0].text
+            # 获取image_link
+            if (
+                dto.image_link == ""
+                and len(bs.select(self.media.selector_image_url)) > 0
+            ):
+                dto.image_link = bs.select(self.media.selector_image_url)[0].attrs[
+                    "src"
+                ]
+            # write_dir = write_dir + title.replace(" ", "_")
+        return dto
+
+    # 函数功能：使用selenium爬取网站
+    # 参数：article_url：链接地址，path：选择器形式，枚举值：xpath、css_selector，默认xpath，
+    # 函数返回：pd.Dataframe,包含标题、日期、作者、图片（可选）、正文、链接地址（同article_url）
+    def crawl_news_Selenium(self, dto: ArticleDTO, path="xpath"):
+        self.driver.get(self.article.link_url)
+        wait = WebDriverWait(self.driver, timeout=10)
+        if path == "xpath":
+            try:
+                if dto.content == "":
+                    dto.content = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, self.media.xpath_content)
+                        )
+                    ).text
+            except Exception:
+                return
+            try:
+                if dto.image_link == "":
+                    dto.image_link = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, self.media.xpath_image_url)
+                        )
+                    ).get_attribute("src")
+
+                if dto.publish_date == DEFAULT_DATETIME:
+                    dto.publish_date = parse_datetime(
+                        wait.until(
+                            EC.presence_of_element_located(
+                                (By.XPATH, self.media.xpath_publish_date)
+                            )
+                        ).text
+                    )
+
+                if dto.author == "":
+                    dto.author = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, self.media.xpath_author)
+                        )
+                    ).text
+            except Exception:
+                pass
+        if path == "css_selector":
+            try:
+                if dto.content == "":
+                    dto.content = wait.until(
+                        EC.presence_of_element_located(
+                            (By.CSS_SELECTOR, self.media.selector_content)
+                        )
+                    ).text
+            except Exception:
+                return
+            try:
+                if dto.image_link == "":
+                    dto.image_link = wait.until(
+                        EC.presence_of_element_located(
+                            (By.CSS_SELECTOR, self.media.selector_image_url)
+                        )
+                    ).get_attribute("src")
+                if dto.publish_date == DEFAULT_DATETIME:
+                    dto.publish_date = parse_datetime(
+                        wait.until(
+                            EC.presence_of_element_located(
+                                (By.CSS_SELECTOR, self.media.selector_publish_date)
+                            )
+                        ).text
+                    )
+                if dto.author == "":
+                    dto.author = wait.until(
+                        EC.presence_of_element_located(
+                            (By.CSS_SELECTOR, self.media.selector_author)
+                        )
+                    ).text
+            except Exception:
+                pass
+
+        return dto
+
+    def check_result(self, content):
+        if content == "":
+            logger.error(f"文章内容抓取异常: {self.article.link_url}")
+        if self.article.author == "":
+            logger.error(f"文章作者抓取异常: {self.article.link_url}")
+        if self.article.image_link == "":
+            logger.error(f"文章图片链接异常: {self.article.link_url}")
+        if self.article.publish_date == DEFAULT_DATETIME:
+            logger.error(f"文章发布日期异常：{self.article.link_url}")
+
+
+def thread_pool_worker(article_link: str):
+    thread = myThread(article_link=article_link, use_selenium=False)
+    thread.start()
+
+
+def main():
+    # news_links=["https://www.nytimes.com/2023/05/12/business/media/last-hollywood-writers-strike.html"]
+    # 多线程版本
+    with ThreadPoolExecutor(max_workers=THREAD_MAX) as pool:
+        engine = get_db_engine()
+        try:
+            with sessionmaker(bind=engine).begin() as db_sess:
+                # 使用s3_prefix是否为空来标记article的内容是否爬取成功
+                article_links = (
+                    db_sess.query(Article.link_url)
+                    .filter(Article.s3_prefix == "")
+                    .all()
+                )
+                for article_link in article_links:
+                    pool.submit(thread_pool_worker, article_link[0])
+        finally:
+            db_sess.close()
+            engine.dispose()
+
 
 if __name__ == "__main__":
-    # 记录已经获取的所有渠道的新闻标题，每个月情空一次
-    title_list = []
-    if time.strftime("%d") == "16":
-        # 每个月初清空列表
-        title_list.clear()
-    #记录系统中维护的媒体列表    
-    #media_list = ["NewsWeek","Times","BusinessWeek"]
-    #media_list = ["NewsWeek"]
-    #以下代码查询db中每一个media的site_url和selector_path，查询结果crawler_info形式如{media1:{url1:selector_path1,url2:selector_path2……},url2:{url3:selector_path3,url4:selector_path4……}}
-    #db写好之前直接使用crawler_info
-    crawler_info={"NewsWeek":{"https://www.newsweek.com":"[id*=break]",
-                              "https://www.newsweek.com/world":".row",
-                              "https://www.newsweek.com/tech-science":".row",
-                              "https://www.newsweek.com/autos":".row",
-                              "https://www.newsweek.com/education":".row"
-                            },
-                  "nytimes":{"https://www.nytimes.com/":"#site-content",
-                             "https://www.nytimes.com/international/section/us":"article"
-                            }           
-                      
-                  }
-    # execute only if run as a script
-    thread_list=[]
-    df=pd.DataFrame()
-    #print(crawler_info_new[0][0])
-    for media in crawler_info.keys():
-       for site_url in crawler_info[media].keys():
-            #以下为单线程版本
-            #df=pd.concat([df,get_news_info(media,site_url,crawler_info[media][site_url],title_list)])
-            #以下3行为多线程版本
-            thread=myThread(media,site_url,crawler_info[media][site_url],title_list)
-            thread.start()
-            thread_list.append(thread)       
-
-    for t in thread_list:
-        t.join()
+    formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    handler = logging.FileHandler("crawler.log")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    main()
+    # 单线程版本
+    # engine = get_db_engine()
+    # try:
+    #     with sessionmaker(bind=engine).begin() as db_sess:
+    #         article_links = (
+    #             db_sess.query(Article.link_url).filter(Article.s3_prefix == "").all()
+    #         )
+    #         for article_link in article_links:
+    #             thread = myThread(article_link=article_link[0], use_selenium=False)
+    #             thread.run()
+    # finally:
+    #     engine.dispose()

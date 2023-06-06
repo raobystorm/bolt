@@ -1,14 +1,18 @@
 import argparse
 import asyncio
+import io
 import json
 import logging
 import os
 import traceback
 from dataclasses import dataclass
 from enum import StrEnum
+from urllib.parse import urlparse
 
+import aiohttp
 from aiobotocore.session import get_session
 from langcodes import Language
+from PIL import Image
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from utils import (
@@ -21,7 +25,7 @@ from utils import (
     translate_title,
 )
 
-from consts import QUEUE_WORKER_URL
+from consts import BOLT_PUBLIC_BUCKET, QUEUE_WORKER_URL
 from db import UserArticle, UserMedia, get_db_engine_async
 
 
@@ -62,6 +66,29 @@ async def check_finish(job: WorkerJob) -> bool:
     )
 
 
+async def download_image(job: WorkerJob) -> None:
+    parsed_url = urlparse(job.image_link)
+    if not parsed_url.path.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp")):
+        return
+
+    async with aiohttp.ClientSession() as sess:
+        async with sess.get(url=parsed_url.geturl()) as resp:
+            if resp.status == 200:
+                image_content = await resp.read()
+            else:
+                logging.error(f"Status code: {resp.status}, url: {parsed_url.geturl()}")
+
+    file_key = os.path.join(job.s3_prefix, "thumbnail.webp")
+    async with get_session().create_client("s3") as s3:
+        with Image.open(io.BytesIO(image_content)) as im:
+            output_bytes = io.BytesIO()
+            im.save(output_bytes, "webp")
+
+        await s3.put_object(
+            Body=output_bytes.getvalue(), Bucket=BOLT_PUBLIC_BUCKET, Key=file_key
+        )
+
+
 async def process_job(job: WorkerJob, use_gpt4: bool) -> bool:
     """根据SQS job的类型进行原文翻译/摘要生成/标题翻译的工作."""
     article_path = os.path.join(job.s3_prefix, "article.txt")
@@ -91,7 +118,8 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> bool:
                 job.s3_prefix, f"lang={job.target_lang}", "title.txt"
             )
         case JobType.GET_IMAGE:
-            pass
+            await download_image(job)
+            return True
         case _:
             raise ValueError(f"Not supported job type: {job.job_type}")
 
@@ -105,9 +133,7 @@ async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
     """完成文章的摘要和翻译后将其推送给已订阅的用户."""
     engine = get_db_engine_async()
     try:
-        async with async_sessionmaker(
-            engine, autoflush=True, expire_on_commit=False
-        )() as db_sess:
+        async with async_sessionmaker(engine).begin() as db_sess:
             stmt = select(UserMedia.user_id).where(
                 UserMedia.media_id == media_id and UserMedia.lang == lang
             )
@@ -119,7 +145,6 @@ async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
                 )
 
             db_sess.add_all(user_articles)
-            await db_sess.commit()
     finally:
         await engine.dispose()
 
@@ -137,8 +162,6 @@ async def main(args: argparse.Namespace) -> None:
                         json_dict = json.loads(message["Body"])
                         job = WorkerJob(**json_dict)
                         logging.info(f"process job: {job}")
-                        if job.job_type == JobType.GET_IMAGE:
-                            continue
                         if await process_job(job, args.use_gpt4):
                             await sqs.delete_message(
                                 QueueUrl=QUEUE_WORKER_URL,

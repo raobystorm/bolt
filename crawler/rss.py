@@ -4,8 +4,6 @@ import random
 # 告警关闭
 import warnings
 from datetime import datetime
-from time import sleep
-from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -91,7 +89,7 @@ def get_news_links(rss_urls: list[str]) -> list[tuple]:
                 pub_date = parse_datetime(i.pubDate.text)
                 # summary = i.summary.text
                 # print(f'Link:{link}\n\n------------------------\n')
-                news_links.append((link, title, pub_date))
+                news_links.append((link, title, pub_date, url))
         except Exception as e:
             logger.error(f"get_news_links出现异常: {url}, {e}")
             continue
@@ -102,42 +100,39 @@ def rss_crawler():
     engine = get_db_engine()
     db_sess = sessionmaker(bind=engine)()
     try:
-        while True:
-            news_links = get_news_links(RSS_URLS)
-            links = list(map(lambda x: x[0], news_links))
-            exists = list(
-                map(
-                    lambda x: x[0],
-                    list(
-                        db_sess.query(Article.link_url)
-                        .filter(Article.link_url.in_(links))
-                        .all()
-                    ),
+        news_links = get_news_links(RSS_URLS)
+        links = list(map(lambda x: x[0], news_links))
+        exists = list(
+            map(
+                lambda x: x[0],
+                list(
+                    db_sess.query(Article.link_url)
+                    .filter(Article.link_url.in_(links))
+                    .all()
+                ),
+            )
+        )
+        news_links = list(filter(lambda x: x[0] not in exists, news_links))
+        articles = []
+
+        for link, title, pub_date, rss_url in news_links:
+            media_id = (
+                db_sess.query(Media.id).filter(Media.rss_url == rss_url).first()[0]
+            )
+            articles.append(
+                Article(
+                    media_id=media_id,
+                    title=title,
+                    link_url=link,
+                    author="",
+                    s3_prefix="",
+                    image_link="",
+                    publish_date=pub_date,
                 )
             )
-            news_links = list(filter(lambda x: x[0] not in exists, news_links))
-            articles = []
 
-            for link, title, pub_date in news_links:
-                host = urlparse(link)[1]
-                media_id = (
-                    db_sess.query(Media.id).filter(Media.base_url == host).first()[0]
-                )
-                articles.append(
-                    Article(
-                        media_id=media_id,
-                        title=title,
-                        link_url=link,
-                        author="",
-                        s3_prefix="",
-                        image_link="",
-                        publish_date=pub_date,
-                    )
-                )
-
-            db_sess.add_all(articles)
-            db_sess.commit()
-            sleep(300)
+        db_sess.add_all(articles)
+        db_sess.commit()
     finally:
         db_sess.close_all()
         engine.dispose()
