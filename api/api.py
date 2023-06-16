@@ -4,9 +4,11 @@ from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker
 
-from db import article, get_db_engine_async, media, user_article
-from worker.utils.s3 import get_text_file_from_s3
+from db import Article, ArticleTranslation, Media, UserArticle, get_db_engine_async
+from utils import get_text_file_from_s3
 
 PAGE_LIMIT = 10
 THUMBNAIL_PREFIX = "https://bolt-prod-public.s3.us-west-2.amazonaws.com/"
@@ -28,67 +30,102 @@ app.add_middleware(
 @app.get("/timeline/{user_id}")
 async def fetch_articles(user_id: int, page: int, lang: str) -> dict:
     engine = get_db_engine_async()
-    async with engine.connect() as conn:
-        offset = PAGE_LIMIT * page
-        stmt = (
-            select(
-                article.c.id, article.c.s3_prefix, article.c.publish_date, media.c.name
+    try:
+        async with sessionmaker(engine, class_=AsyncSession)() as db_sess:
+            offset = PAGE_LIMIT * page
+            stmt = (
+                select(
+                    Article.id,
+                    Article.s3_prefix,
+                    ArticleTranslation.title,
+                    ArticleTranslation.summary,
+                    Article.publish_date,
+                    Media.name,
+                )
+                .join(UserArticle, Article.id == UserArticle.article_id)
+                .join(Media, Article.media_id == Media.id)
+                .join(
+                    ArticleTranslation,
+                    ArticleTranslation.article_id == UserArticle.article_id
+                    and UserArticle.lang == lang,
+                )
+                .filter(UserArticle.user_id == user_id)
+                .order_by(Article.publish_date.desc())
+                .offset(offset)
+                .limit(PAGE_LIMIT)
             )
-            .join(user_article, article.c.id == user_article.c.article_id)
-            .join(media, article.c.media_id == media.c.id)
-            .filter(user_article.c.user_id == user_id)
-            .order_by(article.c.publish_date.desc())
-            .offset(offset)
-            .limit(PAGE_LIMIT)
-        )
-        articles = await conn.execute(stmt)
+            articles = (await db_sess.execute(stmt)).all()
 
-    results: dict[str, list] = {}
-    for id, s3_prefix, publish_date, media_name in articles:
-        d = datetime.strftime(publish_date, "%Y-%m-%d")
-        title = await get_text_file_from_s3(s3_prefix + f"/lang={lang}/title.txt")
-        if d not in results:
-            results[d] = []
-        results[d].append(
-            {
-                "articleId": id,
-                "title": title,
-                "thumbnailPath": THUMBNAIL_PREFIX + s3_prefix + "/thumbnail.webp",
-                "media": media_name,
-            }
-        )
-    return results
+        results: dict[str, list] = {}
+        for id, s3_prefix, title, summary, publish_date, media_name in articles:
+            d = datetime.strftime(publish_date, "%Y-%m-%d")
+            if d not in results:
+                results[d] = []
+            results[d].append(
+                {
+                    "articleId": id,
+                    "title": title,
+                    "summary": summary,
+                    "thumbnailPath": THUMBNAIL_PREFIX + s3_prefix + "/thumbnail.webp",
+                    "media": media_name,
+                }
+            )
+        return results
+    finally:
+        await engine.dispose()
 
 
 @app.get("/article/{article_id}")
 async def get_article(article_id: int, lang: str) -> dict:
     engine = get_db_engine_async()
-    async with engine.connect() as conn:
-        stmt = (
-            select(
-                article.c.title,
-                article.c.s3_prefix,
-                article.c.publish_date,
-                media.c.name,
+    try:
+        async with sessionmaker(engine, class_=AsyncSession)() as db_sess:
+            stmt = (
+                select(
+                    Article.title,
+                    Article.s3_prefix,
+                    Article.publish_date,
+                    Article.link_url,
+                    ArticleTranslation.title,
+                    ArticleTranslation.summary,
+                    Media.name,
+                )
+                .join(Media, Article.media_id == Media.id)
+                .join(
+                    ArticleTranslation,
+                    ArticleTranslation.article_id == article_id
+                    and ArticleTranslation.lang == lang,
+                )
+                .filter(Article.id == article_id)
             )
-            .join(media, article.c.media_id == media.c.id)
-            .filter(article.c.id == article_id)
+            query_res = (await db_sess.execute(stmt)).one()
+
+        (
+            title,
+            s3_prefix,
+            publish_date,
+            link_url,
+            trans_title,
+            summary,
+            media_name,
+        ) = query_res
+
+        trans_text = await get_text_file_from_s3(
+            s3_prefix + f"/lang={lang}/article.txt"
         )
-        query_res = await conn.execute(stmt)
+        if summary is None or len(summary) == 0:
+            summary = await get_text_file_from_s3(
+                s3_prefix + f"/lang={lang}/summary.txt"
+            )
 
-    title, s3_prefix, publish_date, media_name = list(query_res)[0]
-
-    org_text = await get_text_file_from_s3(s3_prefix + "/article.txt")
-    trans_title = await get_text_file_from_s3(s3_prefix + f"/lang={lang}/title.txt")
-    summary = await get_text_file_from_s3(s3_prefix + f"/lang={lang}/summary.txt")
-    trans_text = await get_text_file_from_s3(s3_prefix + f"/lang={lang}/article.txt")
-
-    return {
-        "title": title,
-        "article": org_text,
-        "publish_date": datetime.strftime(publish_date, "%Y-%m-%d"),
-        "media": media_name,
-        "translate_title": trans_title,
-        "summary": summary,
-        "translate_article": trans_text,
-    }
+        return {
+            "title": title,
+            "publish_date": datetime.strftime(publish_date, "%Y-%m-%d %H:%M"),
+            "link_url": link_url,
+            "media": media_name,
+            "translate_title": trans_title,
+            "summary": summary,
+            "translate_article": trans_text,
+        }
+    finally:
+        await engine.dispose()

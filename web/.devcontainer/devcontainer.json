@@ -10,15 +10,14 @@
 				"xabikos.JavaScriptSnippets",
 				"mgmcdermott.vscode-language-babel",
 				"ms-vscode.vscode-typescript-next",
-				"waderyan.nodejs-extension-pack"
+				"waderyan.nodejs-extension-pack",
+				"Prisma.prisma"
 			]
 		}
 	},
 	"remoteUser": "root",
 	"containerEnv": {
-		"AWS_PROFILE": "bolt",
-		"DB_HOST": "172.24.0.2",
-		"DB_PASSWORD": "bolt_pass"
+		"AWS_PROFILE": "bolt"
 	},
 	"runArgs": [
 		"--network=bolt_bolt",

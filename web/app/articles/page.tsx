@@ -1,31 +1,27 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-
-interface Article {
-  articleId: number;
-  title: string;
-  thumbnailPath: string;
-  media: string
-}
+import DailySection, { Article } from '../../components/DailySection/DailySection';
 
 const Timeline = () => {
-  const [items, setItems] = useState<Article[]>([]);
+  const [items, setItems] = useState(new Map<string, Article[]>);
   const [page, setPage] = useState(0);
 
   // Function to fetch data (can be your API call)
   const fetchData = async () => {
     const res = await fetch(`http://localhost:3000/timeline/1?page=${page}&lang=zh-CN`);
     const newItems = await res.json();
-    let itemList: Article[] = [];
-
-    console.log(newItems);
-
-    Object.keys(newItems).forEach(key => {
-      itemList.push(...newItems[key]);
+  
+    setItems(prevState => {
+      Object.keys(newItems).forEach(key => {
+        const articles: Article[] = newItems[key];
+        if(!prevState.has(key)) {
+          prevState.set(key, []);
+        }
+        prevState.set(key, [...prevState.get(key)!, ...articles]);
+      })
+      return prevState;
     })
-
-    setItems(prevState => [...prevState, ...itemList]);
   };
 
   // Fetch data initially when component mounts
@@ -58,9 +54,9 @@ const Timeline = () => {
 
   return (
     <div>
-      {items.map(article => (
-        <div key={article.articleId}>
-          <h1>{article.title}</h1>
+      {[...items].map(([key, value]) => (
+        <div key={key}>
+          <h1>{key}</h1>
         </div>
       ))}
     </div>

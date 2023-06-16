@@ -2,6 +2,7 @@ from db.init_db import init_db_tables, insert_media_list
 
 from .db import (
     Article,
+    ArticleTranslation,
     Base,
     Category,
     Media,
@@ -19,6 +20,7 @@ __all__ = [
     "Category",
     "UserMedia",
     "UserArticle",
+    "ArticleTranslation",
     "Base",
     "get_db_engine_async",
     "get_db_engine",

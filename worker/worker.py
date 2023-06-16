@@ -15,6 +15,9 @@ from langcodes import Language
 from PIL import Image
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from consts import BOLT_PUBLIC_BUCKET, QUEUE_WORKER_URL
+from db import ArticleTranslation, UserArticle, UserMedia, get_db_engine_async
 from utils import (
     check_file_in_s3,
     get_text_file_from_s3,
@@ -24,9 +27,6 @@ from utils import (
     translate_article,
     translate_title,
 )
-
-from consts import BOLT_PUBLIC_BUCKET, QUEUE_WORKER_URL
-from db import UserArticle, UserMedia, get_db_engine_async
 
 
 class JobType(StrEnum):
@@ -102,6 +102,7 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> bool:
             )
         case JobType.TRANSLATE_TITLE:
             text = await translate_title(title=job.title, lang=job.target_lang)
+            text = text.replace(",", "").replace(".", "").replace(";", "")
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "title.txt"
             )
@@ -114,6 +115,7 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> bool:
         case JobType.SUMMARIZE_TITLE:
             content = await get_text_file_from_s3(article_path)
             text = await summarize_title(content, job.target_lang, use_gpt4=use_gpt4)
+            text = text.replace(",", "").replace(".", "").replace(";", "")
             res_path = os.path.join(
                 job.s3_prefix, f"lang={job.target_lang}", "title.txt"
             )
@@ -129,22 +131,47 @@ async def process_job(job: WorkerJob, use_gpt4: bool) -> bool:
     return text != ""
 
 
-async def put_user_articles(media_id: int, article_id: int, lang: str) -> None:
+async def put_article_translation(job: WorkerJob) -> None:
+    engine = get_db_engine_async()
+    try:
+        title_path = os.path.join(job.s3_prefix, f"lang={job.target_lang}", "title.txt")
+        title = await get_text_file_from_s3(title_path)
+        summary_path = os.path.join(
+            job.s3_prefix, f"lang={job.target_lang}", "summary.txt"
+        )
+        summary = await get_text_file_from_s3(summary_path)
+        async with async_sessionmaker(engine).begin() as db_sess:
+            article_translation = ArticleTranslation(
+                article_id=job.article_id,
+                lang=job.target_lang,
+                title=title,
+                summary=summary,
+            )
+            db_sess.add(article_translation)
+    except Exception:
+        print(traceback.format_exc())
+    finally:
+        await engine.dispose()
+
+
+async def put_user_articles(job: WorkerJob) -> None:
     """完成文章的摘要和翻译后将其推送给已订阅的用户."""
     engine = get_db_engine_async()
     try:
         async with async_sessionmaker(engine).begin() as db_sess:
             stmt = select(UserMedia.user_id).where(
-                UserMedia.media_id == media_id and UserMedia.lang == lang
+                UserMedia.media_id == job.media_id and UserMedia.lang == job.target_lang
             )
             user_ids = await db_sess.execute(stmt)
             user_articles = []
             for user_id in user_ids:
                 user_articles.append(
-                    UserArticle(user_id=user_id[0], article_id=article_id)
+                    UserArticle(user_id=user_id[0], article_id=job.article_id)
                 )
 
             db_sess.add_all(user_articles)
+    except Exception:
+        print(traceback.format_exc())
     finally:
         await engine.dispose()
 
@@ -171,11 +198,8 @@ async def main(args: argparse.Namespace) -> None:
                                 logging.info(
                                     f"All jobs of the article {job.article_id} is finished!"
                                 )
-                                await put_user_articles(
-                                    job.media_id,
-                                    job.article_id,
-                                    job.target_lang,
-                                )
+                                await put_article_translation(job)
+                                await put_user_articles(job)
                 else:
                     logging.info("No messages in queue.")
             except Exception:

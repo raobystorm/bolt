@@ -79,6 +79,25 @@ class Article(Base):
     media = relationship("Media", backref="articles")
 
 
+class ArticleTranslation(Base):
+    __tablename__ = "article_translation"
+
+    article_id = Column(
+        BigInteger,
+        ForeignKey("article.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    lang = Column(String(255), nullable=False)
+    title = Column(String(1024), nullable=False)
+    summary = Column(String(4096), nullable=True)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    article = relationship("Article", backref="article_translation")
+
+    __table_args__ = (PrimaryKeyConstraint("article_id", "lang"), {})
+
+
 class Category(Base):
     __tablename__ = "category"
 
