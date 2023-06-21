@@ -3,6 +3,9 @@ import os
 
 import aiohttp
 
+GPT_3_MODEL = "gpt-3.5-turbo-16k"
+GPT_4_MODEL = "gpt-4"
+
 
 async def _call_openai(json_body: dict) -> str:
     api_key: str = os.environ["OPENAI_API_KEY"]
@@ -24,7 +27,7 @@ async def _call_openai(json_body: dict) -> str:
 
 async def summarize_article(text: str, lang: str, use_gpt4: bool = False) -> str:
     body = {
-        "model": "gpt-3.5-turbo",
+        "model": GPT_3_MODEL,
         "temperature": 0,
         "messages": [
             {
@@ -42,13 +45,13 @@ async def summarize_article(text: str, lang: str, use_gpt4: bool = False) -> str
         ],
     }
     if use_gpt4:
-        body["model"] = "gpt-4"
+        body["model"] = GPT_4_MODEL
     return await _call_openai(body)
 
 
 async def translate_article(text: str, lang: str, use_gpt4: bool = False) -> str:
     body = {
-        "model": "gpt-3.5-turbo",
+        "model": GPT_3_MODEL,
         "temperature": 0,
         "messages": [
             {
@@ -66,13 +69,13 @@ async def translate_article(text: str, lang: str, use_gpt4: bool = False) -> str
         ],
     }
     if use_gpt4:
-        body["model"] = "gpt-4"
+        body["model"] = GPT_4_MODEL
     return await _call_openai(body)
 
 
 async def summarize_title(text: str, lang: str, use_gpt4: bool = False):
     body = {
-        "model": "gpt-3.5-turbo",
+        "model": GPT_3_MODEL,
         "temperature": 0,
         "messages": [
             {
@@ -90,13 +93,13 @@ async def summarize_title(text: str, lang: str, use_gpt4: bool = False):
         ],
     }
     if use_gpt4:
-        body["model"] = "gpt-4"
+        body["model"] = GPT_4_MODEL
     return await _call_openai(body)
 
 
 async def translate_title(title: str, lang: str):
     body = {
-        "model": "gpt-3.5-turbo",
+        "model": GPT_3_MODEL,
         "temperature": 0,
         "messages": [
             {

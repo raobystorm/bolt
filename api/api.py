@@ -16,7 +16,7 @@ THUMBNAIL_PREFIX = "https://bolt-prod-public.s3.us-west-2.amazonaws.com/"
 app = FastAPI()
 logger = logging.getLogger("uvicorn.error")
 
-origins = ["http://localhost:8080"]
+origins = ["http://bolt_web"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -56,21 +56,20 @@ async def fetch_articles(user_id: int, page: int, lang: str) -> dict:
             )
             articles = (await db_sess.execute(stmt)).all()
 
-        results: dict[str, list] = {}
+        results: list = []
         for id, s3_prefix, title, summary, publish_date, media_name in articles:
-            d = datetime.strftime(publish_date, "%Y-%m-%d")
-            if d not in results:
-                results[d] = []
-            results[d].append(
+            d = datetime.strftime(publish_date, "%Y-%m-%d %H:%M")
+            results.append(
                 {
                     "articleId": id,
                     "title": title,
+                    "publishDate": d,
                     "summary": summary,
                     "thumbnailPath": THUMBNAIL_PREFIX + s3_prefix + "/thumbnail.webp",
                     "media": media_name,
                 }
             )
-        return results
+        return {"articles": results}
     finally:
         await engine.dispose()
 
